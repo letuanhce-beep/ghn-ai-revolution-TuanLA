@@ -29,7 +29,7 @@ function PillarTrendChart() {
     },
   ];
 
-  const PILLAR_COLORS = ["#F26522", "#003366", "#16A34A", "#D97706", "#7C3AED"];
+  const PILLAR_COLORS = ["#FF5200", "#006FAD", "#16A34A", "#D97706", "#7C3AED"];
 
   return (
     <ResponsiveContainer width="100%" height={300}>
@@ -78,7 +78,7 @@ function WaterfallChart() {
   });
 
   const getColor = (type: string) => {
-    if (type === "start" || type === "end") return "#003366";
+    if (type === "start" || type === "end") return "#006FAD";
     if (type === "positive") return "#16A34A";
     return "#DC2626";
   };
@@ -266,7 +266,7 @@ export default function TabLichSu() {
         <WaterfallChart />
         <div className="flex gap-4 mt-2">
           <span className="flex items-center gap-1.5 text-xs text-slate-500">
-            <span className="w-3 h-3 rounded bg-navy-700 inline-block" style={{ background: "#003366" }} />Điểm neo (Start/End)
+            <span className="w-3 h-3 rounded bg-navy-700 inline-block" style={{ background: "#006FAD" }} />Điểm neo (Start/End)
           </span>
           <span className="flex items-center gap-1.5 text-xs text-slate-500">
             <span className="w-3 h-3 rounded bg-green-600 inline-block" />Tác động tích cực

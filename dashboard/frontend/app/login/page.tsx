@@ -15,17 +15,17 @@ function LoginContent() {
         
         {/* Shield Icon */}
         <div className="mb-6">
-          <Shield className="w-12 h-12 text-[#2563EB]" strokeWidth={2.5} />
+          <Shield className="w-12 h-12 text-[#006FAD]" strokeWidth={2.5} />
         </div>
 
         {/* Title */}
         <h1 className="text-3xl font-bold text-white mb-4 tracking-tight">
-          Hệ Thống Nội Bộ GHN
+          Dữ liệu nội bộ GHN
         </h1>
 
         {/* Description */}
         <p className="text-[15px] text-slate-400 mb-8 leading-relaxed px-4">
-          Vui lòng đăng nhập bằng tài khoản email <strong className="text-slate-300 font-semibold">@ghn.vn</strong> để xem dữ liệu nhạy cảm.
+          Để đảm bảo tính bảo mật, Bạn vui lòng đăng nhập bằng tài khoản email <strong className="text-slate-300 font-semibold">@ghn.vn</strong> để xem dữ liệu. Cảm ơn Bạn!
         </p>
 
         {/* Error Message */}

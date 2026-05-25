@@ -58,7 +58,7 @@ function ExecutiveSummary({ year }: { year: number }) {
   return (
     <div className="space-y-4">
       {/* Header banner */}
-      <div className="rounded-xl p-5" style={{ background: "linear-gradient(135deg, #1A2332 0%, #003366 100%)" }}>
+      <div className="rounded-xl p-5" style={{ background: "linear-gradient(135deg, #1A2332 0%, #006FAD 100%)" }}>
         <div className="flex items-start gap-3">
           <Sparkles size={20} className="text-orange-400 shrink-0 mt-0.5" />
           <div>
@@ -338,7 +338,7 @@ function QuickWinsMatrix() {
                   <div key={w.id} className="flex items-start gap-3 p-2.5 rounded-lg border bg-white hover:shadow-sm transition-shadow"
                        style={{ borderColor: "var(--ghn-border)" }}>
                     <div className="shrink-0 w-6 h-6 rounded flex items-center justify-center text-[10px] font-bold"
-                         style={{ background: "#FFF0E8", color: "#F26522" }}>
+                         style={{ background: "#FFF0E8", color: "#FF5200" }}>
                       {w.id.split("-")[1]}
                     </div>
                     <div className="flex-1 min-w-0">

@@ -6,10 +6,10 @@
 
 /* ── Design Tokens ── */
 :root {
-  --ghn-orange:     #F26522;
+  --ghn-orange:     #FF5200;
   --ghn-orange-light: #FFF0E8;
   --ghn-orange-dark:  #D4541A;
-  --ghn-navy:       #003366;
+  --ghn-navy:       #006FAD;
   --ghn-navy-light: #E8EEF5;
   --ghn-bg:         #F4F6FA;
   --ghn-surface:    #FFFFFF;
@@ -130,7 +130,7 @@ body {
 .badge-green  { background: #DCFCE7; color: #16A34A; }
 .badge-red    { background: #FEE2E2; color: #DC2626; }
 .badge-orange { background: #FFEDD5; color: #EA580C; }
-.badge-blue   { background: #DBEAFE; color: #2563EB; }
+.badge-blue   { background: #DBEAFE; color: #006FAD; }
 .badge-gray   { background: #F1F5F9; color: #64748B; }
 
 /* ── Progress bar ── */

@@ -64,9 +64,9 @@ function PillarRadar({ groupId, year }: { groupId: string; year: number }) {
         <PolarAngleAxis dataKey="pillar" tick={{ fontSize: 11, fill: "#64748b" }} />
         <PolarRadiusAxis angle={90} domain={[0, 5]} tick={{ fontSize: 10, fill: "#94a3b8" }} tickCount={6} />
         <Radar name="Nhóm đã chọn" dataKey="Nhóm đã chọn"
-          stroke="#F26522" fill="#F26522" fillOpacity={0.25} strokeWidth={2} />
+          stroke="#FF5200" fill="#FF5200" fillOpacity={0.25} strokeWidth={2} />
         <Radar name="Trung bình CT" dataKey="Trung bình CT"
-          stroke="#003366" fill="#003366" fillOpacity={0.08} strokeWidth={2} strokeDasharray="5 5" />
+          stroke="#006FAD" fill="#006FAD" fillOpacity={0.08} strokeWidth={2} strokeDasharray="5 5" />
         {prev && (
           <Radar name="Năm trước" dataKey="Năm trước"
             stroke="#94A3B8" fill="none" strokeWidth={1.5} strokeDasharray="3 3" />
@@ -279,7 +279,7 @@ function SentimentPanel({ groupId }: { groupId: string }) {
 
 // ── Demographic Charts ────────────────────────────────────────
 
-const GEN_COLORS = ["#8B5CF6", "#F26522", "#0EA5E9"];
+const GEN_COLORS = ["#8B5CF6", "#FF5200", "#0EA5E9"];
 
 function DemographicPanel() {
   return (
@@ -320,7 +320,7 @@ function DemographicPanel() {
             <XAxis type="number" hide />
             <YAxis type="category" dataKey="name" tick={{ fontSize: 10, fill: "#64748b" }} axisLine={false} tickLine={false} width={56} />
             <Tooltip formatter={(v) => `${v}%`} contentStyle={{ fontSize: 11, borderRadius: 8 }} />
-            <Bar dataKey="value" radius={[0, 4, 4, 0]} fill="#F26522" fillOpacity={0.85}>
+            <Bar dataKey="value" radius={[0, 4, 4, 0]} fill="#FF5200" fillOpacity={0.85}>
               <LabelList dataKey="value" position="right" style={{ fontSize: 10, fontWeight: 700, fill: "#64748b" }}
                          formatter={(v: number) => `${v}%`} />
             </Bar>
@@ -339,7 +339,7 @@ function DemographicPanel() {
             <YAxis tick={{ fontSize: 10, fill: "#94a3b8" }} axisLine={false} tickLine={false} />
             <Tooltip content={<CustomTooltip />} />
             <Bar dataKey="eNPS2025" name="2025" fill="#CBD5E1" radius={[3, 3, 0, 0]} />
-            <Bar dataKey="eNPS2026" name="2026" fill="#F26522" radius={[3, 3, 0, 0]} />
+            <Bar dataKey="eNPS2026" name="2026" fill="#FF5200" radius={[3, 3, 0, 0]} />
             <Legend wrapperStyle={{ fontSize: 10 }} />
           </BarChart>
         </ResponsiveContainer>

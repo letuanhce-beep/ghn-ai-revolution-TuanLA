@@ -102,8 +102,8 @@ function QuestionFrameworkTable() {
 
 // ── Demographic Pie Charts ────────────────────────────────────
 
-const PIE_COLORS_1 = ["#F26522", "#003366", "#16A34A", "#D97706", "#7C3AED"];
-const PIE_COLORS_2 = ["#F26522", "#003366", "#16A34A"];
+const PIE_COLORS_1 = ["#FF5200", "#006FAD", "#16A34A", "#D97706", "#7C3AED"];
+const PIE_COLORS_2 = ["#FF5200", "#006FAD", "#16A34A"];
 
 function DemoPie({
   data,

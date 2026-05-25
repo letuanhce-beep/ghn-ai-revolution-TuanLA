@@ -16,7 +16,7 @@ import {
 
 // ── Gauge Component ───────────────────────────────────────────
 
-function GaugeChart({ value, max = 100, color = "#F26522" }: { value: number; max?: number; color?: string }) {
+function GaugeChart({ value, max = 100, color = "#FF5200" }: { value: number; max?: number; color?: string }) {
   const pct = value / max;
   const radius = 54;
   const strokeWidth = 10;
@@ -25,7 +25,7 @@ function GaugeChart({ value, max = 100, color = "#F26522" }: { value: number; ma
   const cx = 70, cy = 68;
 
   const getZoneColor = (v: number) =>
-    v >= 75 ? "#16A34A" : v >= 65 ? "#F26522" : "#DC2626";
+    v >= 75 ? "#16A34A" : v >= 65 ? "#FF5200" : "#DC2626";
   const zoneColor = getZoneColor(value);
 
   return (
@@ -101,7 +101,7 @@ interface KpiCardProps {
 
 function KpiCard({
   label, value, delta, deltaLabel, icon, invertDelta = false,
-  sparkData, accentColor = "#F26522", isGauge = false, gaugeValue, benchmark,
+  sparkData, accentColor = "#FF5200", isGauge = false, gaugeValue, benchmark,
 }: KpiCardProps) {
   const isPositive = invertDelta ? delta < 0 : delta > 0;
   const isNeutral  = delta === 0;
@@ -205,8 +205,8 @@ function ZoneCard({ zone, type }: { zone: typeof riskZones[0]; type: "risk" | "e
 
 // ── Main Tab ──────────────────────────────────────────────────
 
-const GHN_ORANGE = "#F26522";
-const GHN_NAVY   = "#003366";
+const GHN_ORANGE = "#FF5200";
+const GHN_NAVY   = "#006FAD";
 
 export default function TabTongQuan() {
   const { filters } = useDashboard();
@@ -235,7 +235,7 @@ export default function TabTongQuan() {
     .sort((a, b) => b.eNPS - a.eNPS);
 
   const ENPS_COLORS = divData.map((d) =>
-    d.eNPS >= 30 ? "#16A34A" : d.eNPS >= 10 ? "#D97706" : d.eNPS >= 0 ? "#F26522" : "#DC2626"
+    d.eNPS >= 30 ? "#16A34A" : d.eNPS >= 10 ? "#D97706" : d.eNPS >= 0 ? "#FF5200" : "#DC2626"
   );
 
   // Engagement segment donut
@@ -267,7 +267,7 @@ export default function TabTongQuan() {
           deltaLabel={`${Math.abs(ENPS_DELTA)} điểm`}
           icon={<Users size={16} />}
           sparkData={[5, 8, 10, 12, 18, curKpi.eNPS]}
-          accentColor="#2563EB"
+          accentColor="#006FAD"
           benchmark={BENCHMARK.eNPS.label}
         />
         <KpiCard
