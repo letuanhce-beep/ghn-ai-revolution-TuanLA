@@ -11,6 +11,8 @@ export const metadata: Metadata = {
   keywords: ["GHN", "Employee Engagement", "EES", "HR Analytics", "GiaoHangNhanh"],
 };
 
+import Providers from "@/components/Providers";
+
 export default function RootLayout({
   children,
 }: {
@@ -18,7 +20,9 @@ export default function RootLayout({
 }) {
   return (
     <html lang="vi">
-      <body className={inter.className}>{children}</body>
+      <body className={inter.className}>
+        <Providers>{children}</Providers>
+      </body>
     </html>
   );
 }
