@@ -19,20 +19,20 @@ function LoginContent() {
         </div>
 
         {/* Title */}
-        <h1 className="text-3xl font-bold text-white mb-4 tracking-tight">
+        <h1 className="text-3xl font-bold mb-4 tracking-tight text-transparent bg-clip-text bg-gradient-to-r from-[#FF5200] to-[#006FAD]">
           Dữ liệu nội bộ GHN
         </h1>
 
         {/* Description */}
         <p className="text-[15px] text-slate-400 mb-8 leading-relaxed px-4">
-          Để đảm bảo tính bảo mật, Bạn vui lòng đăng nhập bằng tài khoản email <strong className="text-slate-300 font-semibold">@ghn.vn</strong> để xem dữ liệu. Cảm ơn Bạn!
+          Để đảm bảo tính bảo mật, Bạn vui lòng đăng nhập bằng tài khoản email <strong className="text-[#FF5200] font-bold">@ghn.vn</strong> để xem dữ liệu. Cảm ơn Bạn!
         </p>
 
         {/* Error Message */}
         {error === "AccessDenied" && (
           <div className="w-full mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
             <p className="text-red-400 text-sm font-medium">
-              Truy cập bị từ chối. Vui lòng sử dụng email @ghn.vn hợp lệ.
+              Tài khoản của bạn chưa được cấp quyền xem dữ liệu này. Vui lòng liên hệ Quản trị viên.
             </p>
           </div>
         )}
