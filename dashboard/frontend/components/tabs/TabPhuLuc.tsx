@@ -8,7 +8,23 @@ import {
   demographicGeneration,
 } from "@/lib/mockData";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
-import { ChevronDown, BookOpen, BarChart2, HelpCircle } from "lucide-react";
+import {
+  ChevronDown,
+  BookOpen,
+  BarChart2,
+  HelpCircle,
+  Workflow,
+  Database,
+  Cog,
+  LayoutDashboard,
+  BrainCircuit,
+  ClipboardCheck,
+  FileDown,
+  ShieldCheck,
+  Lock,
+  Mail,
+  Globe,
+} from "lucide-react";
 
 // ── Accordion Item ────────────────────────────────────────────
 
@@ -242,6 +258,167 @@ export default function TabPhuLuc() {
             formula='MEI = Trung bình (Q06 + Q07 + Q08 + Q09 + Q10) / 5'
             description='Chỉ số hiệu quả quản lý, tính từ 5 câu hỏi về TC2 (Trụ cột Quản lý). Thang điểm 1–5. MEI ≥4.0 là Tốt; 3.5–3.9 là Cần cải thiện; <3.5 là Rủi ro.'
           />
+        </div>
+      </AccordionItem>
+
+      {/* System Architecture & Workflow */}
+      <AccordionItem
+        title="Kiến trúc Hệ thống & Workflow"
+        icon={<Workflow size={16} />}
+      >
+        {/* ── Workflow Diagram ── */}
+        <p className="text-xs text-slate-500 mb-5">
+          Luồng xử lý dữ liệu EES 2026 — từ dữ liệu thô đến báo cáo hành động.
+        </p>
+
+        <div className="overflow-x-auto pb-2">
+          <div className="flex items-center gap-0 min-w-[900px]">
+            {/* Step 1 */}
+            <div className="flex-1 min-w-[130px]">
+              <div className="bg-gradient-to-br from-[#FF5200] to-[#FF7A3D] rounded-xl p-3 text-white shadow-md">
+                <div className="bg-white/20 w-8 h-8 rounded-lg flex items-center justify-center mb-2">
+                  <Database size={16} />
+                </div>
+                <p className="text-xs font-bold leading-tight">Dữ liệu khảo sát</p>
+                <p className="text-[10px] opacity-80 mt-1">23,412 phản hồi</p>
+              </div>
+            </div>
+
+            {/* Arrow */}
+            <div className="flex-shrink-0 w-8 flex items-center justify-center text-slate-300">
+              <svg width="24" height="16" viewBox="0 0 24 16" fill="none"><path d="M0 8h20M16 2l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </div>
+
+            {/* Step 2 */}
+            <div className="flex-1 min-w-[130px]">
+              <div className="bg-gradient-to-br from-[#006FAD] to-[#0091E0] rounded-xl p-3 text-white shadow-md">
+                <div className="bg-white/20 w-8 h-8 rounded-lg flex items-center justify-center mb-2">
+                  <Cog size={16} />
+                </div>
+                <p className="text-xs font-bold leading-tight">Data Cleaning & Scoring</p>
+                <p className="text-[10px] opacity-80 mt-1">Engine xử lý tự động</p>
+              </div>
+            </div>
+
+            {/* Arrow */}
+            <div className="flex-shrink-0 w-8 flex items-center justify-center text-slate-300">
+              <svg width="24" height="16" viewBox="0 0 24 16" fill="none"><path d="M0 8h20M16 2l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </div>
+
+            {/* Step 3 */}
+            <div className="flex-1 min-w-[130px]">
+              <div className="bg-gradient-to-br from-[#FF5200] to-[#FF7A3D] rounded-xl p-3 text-white shadow-md">
+                <div className="bg-white/20 w-8 h-8 rounded-lg flex items-center justify-center mb-2">
+                  <LayoutDashboard size={16} />
+                </div>
+                <p className="text-xs font-bold leading-tight">Dashboard Visualization</p>
+                <p className="text-[10px] opacity-80 mt-1">8 tabs phân tích</p>
+              </div>
+            </div>
+
+            {/* Arrow */}
+            <div className="flex-shrink-0 w-8 flex items-center justify-center text-slate-300">
+              <svg width="24" height="16" viewBox="0 0 24 16" fill="none"><path d="M0 8h20M16 2l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </div>
+
+            {/* Step 4 */}
+            <div className="flex-1 min-w-[130px]">
+              <div className="bg-gradient-to-br from-[#006FAD] to-[#0091E0] rounded-xl p-3 text-white shadow-md">
+                <div className="bg-white/20 w-8 h-8 rounded-lg flex items-center justify-center mb-2">
+                  <BrainCircuit size={16} />
+                </div>
+                <p className="text-xs font-bold leading-tight">AI Insights Analysis</p>
+                <p className="text-[10px] opacity-80 mt-1">Phân tích thông minh</p>
+              </div>
+            </div>
+
+            {/* Arrow */}
+            <div className="flex-shrink-0 w-8 flex items-center justify-center text-slate-300">
+              <svg width="24" height="16" viewBox="0 0 24 16" fill="none"><path d="M0 8h20M16 2l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </div>
+
+            {/* Step 5 */}
+            <div className="flex-1 min-w-[130px]">
+              <div className="bg-gradient-to-br from-[#FF5200] to-[#FF7A3D] rounded-xl p-3 text-white shadow-md">
+                <div className="bg-white/20 w-8 h-8 rounded-lg flex items-center justify-center mb-2">
+                  <ClipboardCheck size={16} />
+                </div>
+                <p className="text-xs font-bold leading-tight">Action Tracker</p>
+                <p className="text-[10px] opacity-80 mt-1">Theo dõi hành động</p>
+              </div>
+            </div>
+
+            {/* Arrow */}
+            <div className="flex-shrink-0 w-8 flex items-center justify-center text-slate-300">
+              <svg width="24" height="16" viewBox="0 0 24 16" fill="none"><path d="M0 8h20M16 2l6 6-6 6" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/></svg>
+            </div>
+
+            {/* Step 6 */}
+            <div className="flex-1 min-w-[130px]">
+              <div className="bg-gradient-to-br from-[#006FAD] to-[#0091E0] rounded-xl p-3 text-white shadow-md">
+                <div className="bg-white/20 w-8 h-8 rounded-lg flex items-center justify-center mb-2">
+                  <FileDown size={16} />
+                </div>
+                <p className="text-xs font-bold leading-tight">Auto-Report Export</p>
+                <p className="text-[10px] opacity-80 mt-1">Xuất báo cáo tự động</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* ── Tech Stack ── */}
+        <div className="mt-6">
+          <h4 className="text-xs font-bold text-slate-500 uppercase tracking-wide mb-3">
+            🛠 Tech Stack
+          </h4>
+          <div className="grid grid-cols-3 md:grid-cols-6 gap-2">
+            {[
+              { name: "Next.js", color: "bg-slate-800 text-white" },
+              { name: "React", color: "bg-sky-100 text-sky-700" },
+              { name: "TypeScript", color: "bg-blue-100 text-blue-700" },
+              { name: "Recharts", color: "bg-orange-100 text-orange-700" },
+              { name: "NextAuth", color: "bg-purple-100 text-purple-700" },
+              { name: "Vercel", color: "bg-slate-100 text-slate-700" },
+            ].map((tech) => (
+              <div
+                key={tech.name}
+                className={`${tech.color} rounded-lg px-3 py-2 text-center text-xs font-bold`}
+              >
+                {tech.name}
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* ── Security ── */}
+        <div className="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-4">
+          <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-3 flex items-center gap-2">
+            <ShieldCheck size={14} className="text-green-600" />
+            Bảo mật
+          </h4>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div className="flex items-start gap-2">
+              <Lock size={14} className="text-[#FF5200] mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs font-bold text-slate-700">Google SSO</p>
+                <p className="text-[10px] text-slate-500">Xác thực qua Google OAuth 2.0</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2">
+              <Mail size={14} className="text-[#006FAD] mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs font-bold text-slate-700">Email Whitelist</p>
+                <p className="text-[10px] text-slate-500">Chỉ email được phê duyệt mới truy cập</p>
+              </div>
+            </div>
+            <div className="flex items-start gap-2">
+              <Globe size={14} className="text-green-600 mt-0.5 flex-shrink-0" />
+              <div>
+                <p className="text-xs font-bold text-slate-700">Domain Restriction</p>
+                <p className="text-[10px] text-slate-500">@ghn.vn / @scommerce.asia</p>
+              </div>
+            </div>
+          </div>
         </div>
       </AccordionItem>
     </div>

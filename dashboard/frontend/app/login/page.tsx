@@ -25,7 +25,7 @@ function LoginContent() {
 
         {/* Description */}
         <p className="text-[15px] text-slate-400 mb-8 leading-relaxed px-4">
-          Để đảm bảo tính bảo mật, Bạn vui lòng đăng nhập bằng tài khoản email <strong className="text-[#FF5200] font-bold">@ghn.vn</strong> để xem dữ liệu. Cảm ơn Bạn!
+          Để đảm bảo tính bảo mật, Bạn vui lòng đăng nhập bằng tài khoản email <strong className="text-[#FF5200] font-bold">@ghn.vn</strong> hoặc <strong className="text-[#006FAD] font-bold">@scommerce.asia</strong> để xem dữ liệu. Cảm ơn Bạn!
         </p>
 
         {/* Error Message */}

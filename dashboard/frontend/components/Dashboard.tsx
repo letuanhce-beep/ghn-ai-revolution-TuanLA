@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { DashboardProvider } from "@/context/DashboardContext";
 import GlobalFilters from "@/components/GlobalFilters";
 import TabTongQuan from "@/components/tabs/TabTongQuan";
@@ -9,8 +9,12 @@ import TabActionTracker from "@/components/tabs/TabActionTracker";
 import TabLichSu from "@/components/tabs/TabLichSu";
 import TabPhuLuc from "@/components/tabs/TabPhuLuc";
 import TabAIInsights from "@/components/tabs/TabAIInsights";
+import AlertPanel from "@/components/AlertPanel";
+import AutoReport from "@/components/AutoReport";
+import DataUpload from "@/components/DataUpload";
+import ChatBotCopilot from "@/components/ChatBotCopilot";
 import {
-  BarChart2, Search, CheckSquare, Clock, BookOpen, Sparkles,
+  BarChart2, Search, CheckSquare, Clock, BookOpen, Sparkles, Info,
 } from "lucide-react";
 
 const TABS = [
@@ -32,6 +36,21 @@ function GHNLogo() {
       <img src="/logo.png" alt="GHN Logo" className="w-full h-full object-cover" />
     </div>
   );
+}
+
+// ── Real-time clock ─────────────────────────────────────────
+
+function LiveClock() {
+  const [time, setTime] = useState<string>("");
+
+  useEffect(() => {
+    const update = () => setTime(new Date().toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit", second: "2-digit" }));
+    update();
+    const interval = setInterval(update, 1000);
+    return () => clearInterval(interval);
+  }, []);
+
+  return <span>{time}</span>;
 }
 
 export default function Dashboard() {
@@ -66,21 +85,27 @@ export default function Dashboard() {
               </div>
 
               <div className="flex items-center gap-2">
+                {/* Upload Data */}
+                <DataUpload />
+                {/* Auto Report */}
+                <AutoReport />
+                {/* Alert System */}
+                <AlertPanel />
                 {/* Live badge */}
                 <span className="inline-flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full"
                       style={{ background: "#DCFCE7", color: "#15803D", border: "1px solid #BBF7D0" }}>
                   <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse" />
-                  Live
-                </span>
-                {/* Date */}
-                <span className="text-[11px] hidden sm:block" style={{ color: "var(--text-muted)" }}>
-                  Cập nhật: 21/05/2026
+                  Live · <LiveClock />
                 </span>
                 {/* Confidential */}
                 <span className="text-[10px] font-semibold px-2 py-1 rounded-md hidden md:block"
                       style={{ background: "#FEF3C7", color: "#92400E", border: "1px solid #FDE68A" }}>
                   🔒 NỘI BỘ
                 </span>
+                {/* About */}
+                <a href="/about" className="text-[11px] p-1.5 rounded-full hover:bg-slate-100 transition-colors" title="Thông tin">
+                  <Info size={14} className="text-slate-400" />
+                </a>
               </div>
             </div>
 
@@ -142,14 +167,54 @@ export default function Dashboard() {
           </div>
         </main>
 
+        {/* ── ROI Banner ── */}
+        <div className="max-w-[1440px] mx-auto px-6 pb-6">
+          <div className="rounded-xl p-4 flex items-center justify-between flex-wrap gap-4"
+               style={{ background: "linear-gradient(135deg, #FF520010 0%, #006FAD10 100%)", border: "1px solid #FF520020" }}>
+            <div>
+              <div className="text-[13px] font-bold" style={{ color: "var(--text-primary)" }}>
+                📊 Hiệu quả Tự động hóa Dashboard
+              </div>
+              <div className="text-[11px] mt-1" style={{ color: "var(--text-secondary)" }}>
+                So với quy trình phân tích EES thủ công truyền thống
+              </div>
+            </div>
+            <div className="flex gap-6 flex-wrap">
+              <div className="text-center">
+                <div className="text-[18px] font-extrabold text-[#FF5200]">97%</div>
+                <div className="text-[9px] text-slate-500 font-medium">Giảm thời gian</div>
+                <div className="text-[9px] text-slate-400">3 phút vs 8 giờ</div>
+              </div>
+              <div className="text-center">
+                <div className="text-[18px] font-extrabold text-[#006FAD]">60M₫</div>
+                <div className="text-[9px] text-slate-500 font-medium">Tiết kiệm/năm</div>
+                <div className="text-[9px] text-slate-400">0đ vs 5M/tháng</div>
+              </div>
+              <div className="text-center">
+                <div className="text-[18px] font-extrabold text-[#16A34A]">100%</div>
+                <div className="text-[9px] text-slate-500 font-medium">Độ chính xác</div>
+                <div className="text-[9px] text-slate-400">Tự động, không sai sót</div>
+              </div>
+              <div className="text-center">
+                <div className="text-[18px] font-extrabold text-[#7C3AED]">0 FTE</div>
+                <div className="text-[9px] text-slate-500 font-medium">Nhân lực cần</div>
+                <div className="text-[9px] text-slate-400">vs 2 người/tháng</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {/* ── Footer ── */}
-        <footer className="mt-8 py-4 bg-white" style={{ borderTop: "1px solid var(--ghn-border)" }}>
+        <footer className="mt-2 py-4 bg-white" style={{ borderTop: "1px solid var(--ghn-border)" }}>
           <div className="max-w-[1440px] mx-auto px-6 flex items-center justify-between text-[11px]"
                style={{ color: "var(--text-muted)" }}>
             <span>© 2026 GiaoHangNhanh · Bộ phận Nhân lực & EX · Bảo mật nội bộ</span>
-            <span>EES Dashboard v3.0 · Dữ liệu khảo sát Q1/2026 · 23,412 respondents</span>
+            <span>EES Dashboard v3.1 · Dữ liệu khảo sát Q1/2026 · 23,412 respondents</span>
           </div>
         </footer>
+
+        {/* ── Chatbot Copilot (Floating) ── */}
+        <ChatBotCopilot />
       </div>
     </DashboardProvider>
   );

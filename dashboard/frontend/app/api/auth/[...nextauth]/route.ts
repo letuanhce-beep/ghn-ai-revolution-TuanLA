@@ -14,8 +14,8 @@ const handler = NextAuth({
       if (account?.provider === "google") {
         if (!user.email) return "/login?error=AccessDenied";
         
-        // 1. Phải là email đuôi @ghn.vn
-        if (!user.email.endsWith("@ghn.vn")) {
+        // 1. Phải là email đuôi @ghn.vn hoặc @scommerce.asia
+        if (!user.email.endsWith("@ghn.vn") && !user.email.endsWith("@scommerce.asia")) {
           return "/login?error=AccessDenied";
         }
 
