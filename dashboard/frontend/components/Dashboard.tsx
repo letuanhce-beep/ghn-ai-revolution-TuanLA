@@ -117,7 +117,8 @@ function DashboardContent() {
             { email: "admin.ees@ghn.vn", role: "HR_EX", scope: "" },
             { email: "ex-executives@scommerce.asia", role: "HR_EX", scope: "" },
             { email: "ceo.office@scommerce.asia", role: "KHOI_LEADER", scope: "" },
-            { email: "ops.leader@ghn.vn", role: "KHOI_LEADER", scope: "VH" }
+            { email: "ops.leader@ghn.vn", role: "KHOI_LEADER", scope: "VH" },
+            { email: "hongnx@ghn.vn", role: "HR_EX", scope: "" }
           ];
         }
 
@@ -138,7 +139,7 @@ function DashboardContent() {
         }
 
         // Default hardcoded fallback mappings if not found in custom Whitelist
-        if (email === "tuanla@ghn.vn") {
+        if (email === "tuanla@ghn.vn" || email === "hongnx@ghn.vn") {
           setUserRole("HR_EX"); // Admin
           setUserScope("");
           setIsCheckingAuth(false);

@@ -25,9 +25,23 @@ function checkEmailInServerWhitelist(email: string): boolean {
     "admin.ees@ghn.vn",
     "ex-executives@scommerce.asia",
     "ops.leader@ghn.vn",
-    "ceo.office@scommerce.asia"
+    "ceo.office@scommerce.asia",
+    "hongnx@ghn.vn"
   ];
-  return fallbacks.includes(email.toLowerCase());
+  if (fallbacks.includes(email.toLowerCase())) {
+    return true;
+  }
+
+  // Also check if email is in the ALLOWED_EMAILS environment variable configuration
+  const allowedEmailsStr = process.env.ALLOWED_EMAILS;
+  if (allowedEmailsStr) {
+    const allowed = allowedEmailsStr.split(",").map((e) => e.trim().toLowerCase());
+    if (allowed.includes(email.toLowerCase())) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 const handler = NextAuth({

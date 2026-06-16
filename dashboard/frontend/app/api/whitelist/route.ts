@@ -10,7 +10,8 @@ const defaultWhitelist = [
   { email: "admin.ees@ghn.vn", role: "HR_EX", scope: "" },
   { email: "ex-executives@scommerce.asia", role: "HR_EX", scope: "" },
   { email: "ceo.office@scommerce.asia", role: "KHOI_LEADER", scope: "" },
-  { email: "ops.leader@ghn.vn", role: "KHOI_LEADER", scope: "VH" }
+  { email: "ops.leader@ghn.vn", role: "KHOI_LEADER", scope: "VH" },
+  { email: "hongnx@ghn.vn", role: "HR_EX", scope: "" }
 ];
 
 // In-memory fallback cache to support Vercel serverless persistence during active runtime
