@@ -4,29 +4,29 @@
 @tailwind components;
 @tailwind utilities;
 
-/* ── Design Tokens ── */
+/* ── Design Tokens (Cyber Dark Theme) ── */
 :root {
-  --ghn-orange:     #FF5200;
-  --ghn-orange-light: #FFF0E8;
-  --ghn-orange-dark:  #D4541A;
-  --ghn-navy:       #006FAD;
-  --ghn-navy-light: #E8EEF5;
-  --ghn-bg:         linear-gradient(135deg, #F8FAFC 0%, #E8EEF5 100%);
-  --ghn-surface:    #FFFFFF;
-  --ghn-border:     #E4E9F0;
+  --ghn-orange:       #FF5200;
+  --ghn-orange-light: rgba(255, 82, 0, 0.12);
+  --ghn-orange-dark:  #FF5200;
+  --ghn-navy:         #006FAD;
+  --ghn-navy-light:   rgba(0, 111, 173, 0.12);
+  --ghn-bg:           #080C14;
+  --ghn-surface:      #111726;
+  --ghn-border:       #1F293D;
 
-  --text-primary:   #1A2332;
-  --text-secondary: #4A5568;
-  --text-muted:     #94A3B8;
+  --text-primary:     #F8FAFC;
+  --text-secondary:   #94A3B8;
+  --text-muted:       #64748B;
 
-  --green-positive: #16A34A;
-  --red-negative:   #DC2626;
-  --amber-warning:  #D97706;
+  --green-positive:   #10B981;
+  --red-negative:     #EF4444;
+  --amber-warning:    #F59E0B;
 
   --radius-card:  24px;
   --radius-badge: 12px;
-  --shadow-card:  0 4px 20px rgba(0,0,0,.08);
-  --shadow-hover: 0 10px 30px rgba(0,0,0,.15);
+  --shadow-card:  0 10px 30px rgba(0, 0, 0, 0.4);
+  --shadow-hover: 0 15px 40px rgba(255, 82, 0, 0.08);
 }
 
 /* ── Base Reset ── */
@@ -37,7 +37,14 @@ html { scroll-behavior: smooth; }
 body {
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   color: var(--text-primary);
-  background: var(--ghn-bg);
+  background: 
+    radial-gradient(circle at 10% 20%, rgba(0, 111, 173, 0.08) 0%, transparent 40%),
+    radial-gradient(circle at 90% 80%, rgba(255, 82, 0, 0.08) 0%, transparent 45%),
+    linear-gradient(rgba(255, 82, 0, 0.01) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 82, 0, 0.01) 1px, transparent 1px),
+    var(--ghn-bg);
+  background-size: 100% 100%, 100% 100%, 40px 40px, 40px 40px;
+  background-attachment: fixed;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
@@ -51,8 +58,8 @@ body {
 
 ::-webkit-scrollbar { width: 5px; height: 5px; }
 ::-webkit-scrollbar-track { background: transparent; }
-::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 99px; }
-::-webkit-scrollbar-thumb:hover { background: #94A3B8; }
+::-webkit-scrollbar-thumb { background: #2D3748; border-radius: 99px; }
+::-webkit-scrollbar-thumb:hover { background: #4A5568; }
 
 /* ── Animations ── */
 @keyframes fadeInUp {
@@ -114,7 +121,7 @@ body {
 /* ── Recharts ── */
 .recharts-tooltip-wrapper { z-index: 50; }
 .recharts-cartesian-grid-horizontal line,
-.recharts-cartesian-grid-vertical   line { stroke: #EEF2F7; }
+.recharts-cartesian-grid-vertical   line { stroke: var(--ghn-border); }
 
 /* ── Badge ── */
 .badge {
@@ -137,7 +144,7 @@ body {
 .progress-bar {
   height: 6px;
   border-radius: 99px;
-  background: #EEF2F7;
+  background: #1A2233;
   overflow: hidden;
 }
 .progress-bar-fill {
@@ -158,3 +165,60 @@ body {
   color: var(--text-muted);
   margin-top: 2px;
 }
+
+/* ── Cyber Dark Theme Utility Class Overrides ── */
+.bg-white {
+  background-color: var(--ghn-surface) !important;
+}
+.bg-slate-50, .bg-slate-100 {
+  background-color: #0B0F19 !important;
+}
+.bg-slate-200 {
+  background-color: #1A2233 !important;
+}
+.text-slate-900, .text-slate-800, .text-slate-700 {
+  color: var(--text-primary) !important;
+}
+.text-slate-600, .text-slate-500 {
+  color: var(--text-secondary) !important;
+}
+.text-slate-400 {
+  color: var(--text-muted) !important;
+}
+.border-slate-100, .border-slate-200, .border-slate-200\/60, .border-slate-200\/80 {
+  border-color: var(--ghn-border) !important;
+}
+.divide-slate-100 > * + * {
+  border-color: var(--ghn-border) !important;
+}
+.divide-slate-200 > * + * {
+  border-color: var(--ghn-border) !important;
+}
+
+/* Header semi-transparent blur override */
+header {
+  background-color: rgba(17, 23, 38, 0.85) !important;
+}
+
+/* Global selector overrides for form inputs */
+select, input[type="text"], input[type="email"], input[type="date"], input[type="number"] {
+  background-color: #0B0F19 !important;
+  color: var(--text-primary) !important;
+  border: 1px solid var(--ghn-border) !important;
+}
+select option {
+  background-color: #111726;
+  color: var(--text-primary);
+}
+select:focus, input:focus {
+  border-color: var(--ghn-orange) !important;
+  box-shadow: 0 0 0 2px rgba(255, 82, 0, 0.2) !important;
+}
+
+/* Badge specific styling updates */
+.badge-green  { background: rgba(16, 185, 129, 0.12); color: #10B981; }
+.badge-red    { background: rgba(239, 68, 68, 0.12);  color: #EF4444; }
+.badge-orange { background: rgba(255, 82, 0, 0.12);   color: #FF5200; }
+.badge-blue   { background: rgba(0, 111, 173, 0.12);  color: #006FAD; }
+.badge-gray   { background: rgba(148, 163, 184, 0.12); color: #94A3B8; }
+
