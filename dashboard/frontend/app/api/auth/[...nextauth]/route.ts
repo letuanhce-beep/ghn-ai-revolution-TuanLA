@@ -1,16 +1,13 @@
 import NextAuth from "next-auth";
 import GoogleProvider from "next-auth/providers/google";
 import CredentialsProvider from "next-auth/providers/credentials";
-import fs from "fs";
-import path from "path";
+import { getWhitelistFromServer } from "@/lib/whitelistDb";
 
-// Helper to check if email exists in the server-side whitelist.json file
-function checkEmailInServerWhitelist(email: string): boolean {
+// Helper to check if email exists in the server-side whitelist database
+async function checkEmailInServerWhitelist(email: string): Promise<boolean> {
   try {
-    const filePath = path.join(process.cwd(), "data", "whitelist.json");
-    if (fs.existsSync(filePath)) {
-      const data = fs.readFileSync(filePath, "utf8");
-      const whitelist = JSON.parse(data);
+    const whitelist = await getWhitelistFromServer();
+    if (whitelist && Array.isArray(whitelist)) {
       return whitelist.some(
         (item: any) => item.email && item.email.toLowerCase() === email.toLowerCase()
       );
@@ -19,7 +16,7 @@ function checkEmailInServerWhitelist(email: string): boolean {
     console.error("Failed to read server whitelist", e);
   }
   
-  // Hardcoded fallback list if the file is not yet generated or fails
+  // Hardcoded fallback list if the database read fails
   const fallbacks = [
     "tuanla@ghn.vn",
     "admin.ees@ghn.vn",
@@ -28,20 +25,7 @@ function checkEmailInServerWhitelist(email: string): boolean {
     "ceo.office@scommerce.asia",
     "hongnx@ghn.vn"
   ];
-  if (fallbacks.includes(email.toLowerCase())) {
-    return true;
-  }
-
-  // Also check if email is in the ALLOWED_EMAILS environment variable configuration
-  const allowedEmailsStr = process.env.ALLOWED_EMAILS;
-  if (allowedEmailsStr) {
-    const allowed = allowedEmailsStr.split(",").map((e) => e.trim().toLowerCase());
-    if (allowed.includes(email.toLowerCase())) {
-      return true;
-    }
-  }
-
-  return false;
+  return fallbacks.includes(email.toLowerCase());
 }
 
 const handler = NextAuth({
@@ -65,7 +49,20 @@ const handler = NextAuth({
         }
 
         // 2. Phải nằm trong Whitelist
-        if (!checkEmailInServerWhitelist(email)) {
+        const isWhitelisted = await checkEmailInServerWhitelist(email);
+        if (!isWhitelisted) {
+          // Check if email is in the ALLOWED_EMAILS environment variable configuration
+          const allowedEmailsStr = process.env.ALLOWED_EMAILS;
+          if (allowedEmailsStr) {
+            const allowed = allowedEmailsStr.split(",").map((e) => e.trim().toLowerCase());
+            if (allowed.includes(email)) {
+              return {
+                id: email,
+                name: email.split("@")[0].replace(/[._]/g, " ").toUpperCase(),
+                email: email,
+              };
+            }
+          }
           return null; // Deny (Chưa được phân quyền)
         }
 
@@ -98,7 +95,16 @@ const handler = NextAuth({
         }
 
         // 2. Phải nằm trong Whitelist
-        if (!checkEmailInServerWhitelist(email)) {
+        const isWhitelisted = await checkEmailInServerWhitelist(email);
+        if (!isWhitelisted) {
+          // Check if email is in the ALLOWED_EMAILS environment variable configuration
+          const allowedEmailsStr = process.env.ALLOWED_EMAILS;
+          if (allowedEmailsStr) {
+            const allowed = allowedEmailsStr.split(",").map((e) => e.trim().toLowerCase());
+            if (allowed.includes(email)) {
+              return true;
+            }
+          }
           return "/login?error=NotAuthorized";
         }
 
