@@ -77,17 +77,20 @@ const STORAGE_KEYS = {
 const DashboardContext = createContext<DashboardContextType | null>(null);
 
 // ── Google Sheets URL Converter ───────────────────────────────────
-// Convert sharing link to CSV publish link if needed
+// Convert sharing link to CSV export or publish link if needed
 function cleanSyncUrl(url: string): string {
   let cleanUrl = url.trim();
   if (cleanUrl.includes("docs.google.com/spreadsheets")) {
     const match = cleanUrl.match(/\/d\/([a-zA-Z0-9-_]+)/);
     if (match && match[1]) {
       const spreadsheetId = match[1];
-      // Convert to publish link if it's not already
-      if (!cleanUrl.includes("/pub?")) {
-        return `https://docs.google.com/spreadsheets/d/${spreadsheetId}/pub?output=csv`;
+      // If it's already a published-to-web link, keep it as is
+      if (cleanUrl.includes("/pub")) {
+        return cleanUrl;
       }
+      // Otherwise, convert standard spreadsheet URL to direct CSV export format.
+      // This works for any Google Sheet shared as "Anyone with the link can view".
+      return `https://docs.google.com/spreadsheets/d/${spreadsheetId}/export?format=csv`;
     }
   }
   return cleanUrl;
@@ -329,8 +332,13 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     const cleanUrl = cleanSyncUrl(activeUrl);
 
     try {
-      // Standard fetch
-      const response = await fetch(cleanUrl, {
+      // Check if URL is external to avoid CORS blocks
+      let fetchUrl = cleanUrl;
+      if (typeof window !== "undefined" && cleanUrl.startsWith("http") && !cleanUrl.includes(window.location.host)) {
+        fetchUrl = `/api/sync-proxy?url=${encodeURIComponent(cleanUrl)}`;
+      }
+
+      const response = await fetch(fetchUrl, {
         method: "GET",
         headers: {
           "Accept": "text/csv, application/json, text/plain, */*"
@@ -340,7 +348,15 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       });
 
       if (!response.ok) {
-        throw new Error(`Mã phản hồi lỗi: ${response.status} ${response.statusText}`);
+        let errorBody = "";
+        try {
+          errorBody = await response.text();
+          const errObj = JSON.parse(errorBody);
+          if (errObj && errObj.error) {
+            throw new Error(errObj.error);
+          }
+        } catch {}
+        throw new Error(errorBody || `Mã phản hồi lỗi: ${response.status} ${response.statusText}`);
       }
 
       const text = await response.text();
@@ -364,7 +380,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
       }
 
       // Success
-      updateDataManually(parsed, `URL Link: ${activeUrl.substring(0, 45)}...`);
+      updateDataManually(parsed, `URL Link: ${activeUrl}`);
       setSyncStatus("success");
       
       // Keep success state for 4 seconds, then go idle
@@ -376,7 +392,7 @@ export function DashboardProvider({ children }: { children: ReactNode }) {
     } catch (err: any) {
       console.error("Fetch Sync error:", err);
       setSyncStatus("error");
-      setSyncErrorMsg(err.message || "Không thể kết nối đến Link URL. Hãy kiểm tra kết nối mạng hoặc CORS.");
+      setSyncErrorMsg(err.message || "Không thể kết nối đến Link URL. Hãy kiểm tra kết nối mạng hoặc cấu hình URL.");
       return false;
     }
   };
