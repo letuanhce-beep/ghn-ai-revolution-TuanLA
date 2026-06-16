@@ -174,7 +174,7 @@ export default function AlertPanel() {
       {/* Bell button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="relative flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full transition-all hover:scale-105"
+        className="relative flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full transition-all hover:scale-105 shrink-0 whitespace-nowrap"
         style={{ background: criticalCount > 0 ? "#FEF3C7" : "#F1F5F9", color: criticalCount > 0 ? "#92400E" : "#64748B", border: `1px solid ${criticalCount > 0 ? "#FDE68A" : "#E2E8F0"}` }}
       >
         <Bell size={13} />

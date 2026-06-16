@@ -166,7 +166,7 @@ export default function AutoReport() {
     <button
       onClick={handleExport}
       disabled={isGenerating}
-      className="flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full transition-all hover:scale-105 disabled:opacity-60"
+      className="flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full transition-all hover:scale-105 disabled:opacity-60 shrink-0 whitespace-nowrap"
       style={{
         background: isDone ? "#DCFCE7" : "#FFF0E8",
         color: isDone ? "#166534" : "#FF5200",

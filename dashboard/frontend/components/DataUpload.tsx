@@ -66,22 +66,25 @@ export default function DataUpload() {
   // Format the source name for display in header badge
   const getShortSource = () => {
     if (!syncSource || syncSource === "System Mock") {
-      return "Mẫu hệ thống";
+      return "Mẫu";
     }
     if (syncSource.startsWith("Tải file: ")) {
       const filename = syncSource.replace("Tải file: ", "");
-      return filename.length > 18 ? filename.substring(0, 15) + "..." : filename;
+      return filename.length > 10 ? filename.substring(0, 8) + "..." : filename;
     }
     if (syncSource.startsWith("URL Link: ")) {
       const url = syncSource.replace("URL Link: ", "");
+      if (url.includes("/ees_template.csv") || (typeof window !== "undefined" && url.includes(window.location.host))) {
+        return "Demo";
+      }
       try {
         const parsed = new URL(url);
         if (parsed.hostname.includes("google.com")) {
-          return "Google Sheet";
+          return "G-Sheet";
         }
-        return parsed.hostname;
+        return parsed.hostname.length > 12 ? parsed.hostname.substring(0, 10) + "..." : parsed.hostname;
       } catch {
-        return "Link URL";
+        return "URL";
       }
     }
     return syncSource;
@@ -150,22 +153,11 @@ export default function DataUpload() {
   };
 
   return (
-    <div className="flex items-center gap-2">
-      {/* Short source display badge */}
-      <div 
-        className="hidden sm:flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-1.5 rounded-full border bg-slate-50 text-slate-500 border-slate-200 shrink-0"
-        title={syncSource && syncSource.startsWith("URL Link: ") ? syncSource.replace("URL Link: ", "") : (syncSource || "Mặc định (Mock Data)")}
-      >
-        <span className="w-1.5 h-1.5 rounded-full" style={{
-          background: !syncSource || syncSource === "System Mock" ? "#64748B" : syncSource.startsWith("Tải file:") ? "#3B82F6" : "#22C55E"
-        }} />
-        <span>Nguồn: {getShortSource()}</span>
-      </div>
-
+    <div className="relative shrink-0">
       {/* Header Button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full transition-all hover:scale-105 border shrink-0"
+        className="flex items-center gap-1.5 text-[11px] font-bold px-3 py-1.5 rounded-full transition-all hover:scale-105 border shrink-0 whitespace-nowrap"
         style={{
           background: syncStatus === "success" ? "#DCFCE7" : syncStatus === "error" ? "#FEE2E2" : "#EFF6FF",
           color: syncStatus === "success" ? "#166534" : syncStatus === "error" ? "#991B1B" : "#006FAD",
@@ -181,7 +173,16 @@ export default function DataUpload() {
         ) : (
           <Database size={13} />
         )}
-        <span>Cập nhật Dữ liệu</span>
+        <span>Cập nhật</span>
+        <span 
+          className="text-[9.5px] px-1.5 py-0.5 rounded font-extrabold uppercase"
+          style={{
+            background: syncStatus === "success" ? "#BBF7D0" : syncStatus === "error" ? "#FECACA" : "#BFDBFE",
+            color: syncStatus === "success" ? "#14532D" : syncStatus === "error" ? "#7F1D1D" : "#1C3D5A",
+          }}
+        >
+          {getShortSource()}
+        </span>
         {lastSyncTime && syncStatus === "idle" && (
           <span className="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse ml-0.5" />
         )}
