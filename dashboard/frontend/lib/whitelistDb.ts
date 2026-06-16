@@ -10,7 +10,8 @@ export const defaultWhitelist = [
   { email: "ex-executives@scommerce.asia", role: "HR_EX", scope: "" },
   { email: "ceo.office@scommerce.asia", role: "KHOI_LEADER", scope: "" },
   { email: "ops.leader@ghn.vn", role: "KHOI_LEADER", scope: "VH" },
-  { email: "hongnx@ghn.vn", role: "KHOI_LEADER", scope: "" }
+  { email: "hongnx@ghn.vn", role: "KHOI_LEADER", scope: "" },
+  { email: "nhatnd@ghn.vn", role: "KHOI_LEADER", scope: "" }
 ];
 
 export async function getWhitelistFromServer(): Promise<any[]> {

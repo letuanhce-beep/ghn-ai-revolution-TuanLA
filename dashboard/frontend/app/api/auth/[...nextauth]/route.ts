@@ -23,7 +23,8 @@ async function checkEmailInServerWhitelist(email: string): Promise<boolean> {
     "ex-executives@scommerce.asia",
     "ops.leader@ghn.vn",
     "ceo.office@scommerce.asia",
-    "hongnx@ghn.vn"
+    "hongnx@ghn.vn",
+    "nhatnd@ghn.vn"
   ];
   return fallbacks.includes(email.toLowerCase());
 }
