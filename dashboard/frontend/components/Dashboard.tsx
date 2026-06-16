@@ -67,13 +67,24 @@ export default function Dashboard() {
 
 function DashboardContent() {
   const { filters, setFilter, resetFilters } = useDashboard();
-  const { data: session } = useSession();
+  const { data: session, status } = useSession();
   const [activeTab, setActiveTab] = useState<TabId>("tongquan");
   const [userRole, setUserRole] = useState<"HR_EX" | "KHOI_LEADER">("HR_EX");
   const [userScope, setUserScope] = useState<string>("");
+  const [isCheckingAuth, setIsCheckingAuth] = useState(true);
 
   // Map email from NextAuth session to Role and Scope
   useEffect(() => {
+    if (status === "loading") {
+      setIsCheckingAuth(true);
+      return;
+    }
+
+    if (status === "unauthenticated") {
+      setIsCheckingAuth(false);
+      return;
+    }
+
     if (session?.user?.email) {
       const email = session.user.email.toLowerCase().trim();
       
@@ -108,6 +119,7 @@ function DashboardContent() {
           const resolvedRole = (matched.role === "CEO" || matched.role === "KHOI_LEADER") ? "KHOI_LEADER" : matched.role;
           setUserRole(resolvedRole as any);
           setUserScope(matched.scope || "");
+          setIsCheckingAuth(false);
           return;
         }
       }
@@ -116,25 +128,29 @@ function DashboardContent() {
       if (email === "tuanla@ghn.vn") {
         setUserRole("HR_EX"); // Admin
         setUserScope("");
+        setIsCheckingAuth(false);
         return;
       }
       
       if (email === "admin.ees@ghn.vn" || email === "ex-executives@scommerce.asia") {
         setUserRole("KHOI_LEADER"); // User
         setUserScope("");
+        setIsCheckingAuth(false);
         return;
       }
       
       if (email === "ops.leader@ghn.vn") {
         setUserRole("KHOI_LEADER"); // User
         setUserScope("VH");
+        setIsCheckingAuth(false);
         return;
       }
 
       // 3. Reject login if not in Whitelist and not fallback master
+      // Do not set isCheckingAuth(false) so they remain on loading screen during redirect
       signOut({ callbackUrl: "/login?error=NotAuthorized" });
     }
-  }, [session]);
+  }, [session, status]);
 
   // Synchronize division filter automatically when role is KHOI_LEADER and scope is set
   useEffect(() => {
@@ -152,6 +168,26 @@ function DashboardContent() {
       resetFilters();
     }
   };
+
+  // Render loading validation screen during check
+  if (status === "loading" || isCheckingAuth) {
+    return (
+      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
+        <div className="flex flex-col items-center max-w-sm text-center space-y-4">
+          <div className="w-16 h-16 rounded-2xl bg-white flex items-center justify-center shadow-md border border-slate-100">
+            <img src="/logo.png" alt="GHN Logo" className="w-12 h-12 object-contain" />
+          </div>
+          <div className="space-y-1.5">
+            <h2 className="text-[14px] font-bold text-slate-800">Đang xác thực quyền truy cập...</h2>
+            <div className="flex items-center justify-center gap-2 mt-1">
+              <div className="w-3.5 h-3.5 border-2 border-orange-500 border-t-transparent rounded-full animate-spin" />
+              <span className="text-[11px] text-slate-400 font-semibold">Hệ thống đang kiểm tra danh sách whitelist</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen" style={{ background: "var(--ghn-bg)" }}>
