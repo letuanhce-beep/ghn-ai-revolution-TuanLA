@@ -456,7 +456,7 @@ export default function ChatBotCopilot({
           </div>
 
           {/* Messages */}
-          <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5" style={{ maxHeight: "380px" }}>
+          <div className="flex-1 overflow-y-auto p-3.5 space-y-3.5" style={{ maxHeight: isEmbedded ? "none" : "380px" }}>
             {messages.map((msg, i) => (
               <div key={i} className={`flex gap-2 ${msg.role === "user" ? "flex-row-reverse" : ""}`}>
                 <div className={`w-5.5 h-5.5 rounded-full flex items-center justify-center shrink-0 mt-0.5 ${

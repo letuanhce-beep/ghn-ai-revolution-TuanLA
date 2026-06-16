@@ -25,6 +25,7 @@ const TABS = [
   { id: "insights", label: "AI Insights",    icon: <Sparkles size={14} /> },
   { id: "action",   label: "Thực thi",       icon: <CheckSquare size={14} /> },
   { id: "lichsu",   label: "Lịch sử",        icon: <Clock size={14} /> },
+  { id: "copilot",  label: "Trợ lý Copilot", icon: <Bot size={14} /> },
   { id: "phanquyen", label: "Phân quyền",    icon: <Shield size={14} />, adminOnly: true },
   { id: "phuluc",   label: "Phụ lục",        icon: <BookOpen size={14} /> },
 ] as const;
@@ -68,7 +69,6 @@ function DashboardContent() {
   const { filters, setFilter, resetFilters } = useDashboard();
   const { data: session } = useSession();
   const [activeTab, setActiveTab] = useState<TabId>("tongquan");
-  const [isChatExpanded, setIsChatExpanded] = useState<boolean>(false);
   const [userRole, setUserRole] = useState<"HR_EX" | "KHOI_LEADER">("HR_EX");
   const [userScope, setUserScope] = useState<string>("");
 
@@ -257,7 +257,7 @@ function DashboardContent() {
                 {TABS.filter((tab) => !("adminOnly" in tab && tab.adminOnly) || userRole === "HR_EX").map((tab) => {
                   const isActive = activeTab === tab.id;
                   const isAI = tab.id === "insights";
-                  const isSpecial = tab.id === "insights" || tab.id === "phanquyen";
+                  const isSpecial = tab.id === "insights" || tab.id === "phanquyen" || tab.id === "copilot";
                   return (
                     <button
                       key={tab.id}
@@ -283,11 +283,13 @@ function DashboardContent() {
                         </span>
                         <span>{tab.label}</span>
                       </div>
-                      {isAI && (
+                      {(isAI || tab.id === "copilot") && (
                         <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${
-                          isActive ? "bg-purple-100 text-purple-600" : "bg-white/15 text-white"
+                          isActive 
+                            ? tab.id === "copilot" ? "bg-orange-100 text-orange-600" : "bg-purple-100 text-purple-600" 
+                            : "bg-white/15 text-white"
                         }`}>
-                          NEW
+                          {tab.id === "copilot" ? "AI" : "NEW"}
                         </span>
                       )}
                     </button>
@@ -295,35 +297,7 @@ function DashboardContent() {
                 })}
               </nav>
             </div>
-
-            {/* Collapsed Chatbot Button (Sleek dark futuristic style inside sidebar) */}
-            {!isChatExpanded && (
-              <button
-                onClick={() => setIsChatExpanded(true)}
-                className="w-full bg-slate-950/90 text-white hover:bg-slate-900 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between transition-all duration-150 shadow-md group border-l-4 border-l-[#FF5200] hover:shadow-[0_0_15px_rgba(255,82,0,0.15)]"
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 relative">
-                    <Bot className="w-4.5 h-4.5 text-[#FF5200] group-hover:scale-110 transition-transform duration-150" />
-                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-green-500 animate-ping" />
-                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-green-500" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-[12px] font-extrabold tracking-tight">Trợ lý GHN Copilot</div>
-                    <div className="text-[9px] text-slate-400 font-medium">Click để chat AI</div>
-                  </div>
-                </div>
-                <Sparkles className="w-3.5 h-3.5 text-purple-400 animate-pulse" />
-              </button>
-            )}
           </aside>
-
-          {/* Popout Chatbot Widget (Slides out to the right of the sidebar, not clipped by overflow) */}
-          {isChatExpanded && (
-            <div className="absolute left-[300px] bottom-0 z-50 w-[400px] h-[520px] rounded-2xl overflow-hidden shadow-2xl animate-fadeIn border border-slate-200/50">
-              <ChatBotCopilot isEmbedded={true} onClose={() => setIsChatExpanded(false)} onCommand={handleConversationalCommand} />
-            </div>
-          )}
         </div>
 
         {/* Right Main Content Panel */}
@@ -334,6 +308,22 @@ function DashboardContent() {
             {activeTab === "insights" && <TabAIInsights />}
             {activeTab === "action"   && <TabActionTracker />}
             {activeTab === "lichsu"   && <TabLichSu />}
+            {activeTab === "copilot"  && (
+              <div className="card p-5 flex flex-col h-[calc(100vh-210px)] min-h-[580px] animate-fadeInUp">
+                <div className="flex flex-col gap-1 mb-4 shrink-0">
+                  <h2 className="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+                    <Bot className="text-[#006FAD]" size={20} />
+                    Trợ lý Copilot — GHN EES 2026
+                  </h2>
+                  <p className="text-xs text-slate-500">
+                    Hỏi đáp thông minh, phân tích dữ liệu và tư vấn giải pháp cải thiện trải nghiệm nhân sự (EX).
+                  </p>
+                </div>
+                <div className="flex-1 min-h-0 bg-[#090D16] rounded-2xl overflow-hidden border border-[#006FAD]/20 shadow-md">
+                  <ChatBotCopilot isEmbedded={true} onCommand={handleConversationalCommand} />
+                </div>
+              </div>
+            )}
             {activeTab === "phanquyen" && <TabPhanQuyen userRole={userRole} />}
             {activeTab === "phuluc"   && <TabPhuLuc userRole={userRole} />}
           </main>
