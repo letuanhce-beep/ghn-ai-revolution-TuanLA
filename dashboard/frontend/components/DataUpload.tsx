@@ -54,11 +54,12 @@ export default function DataUpload() {
     await triggerSync(tempUrl);
   };
 
-  const handleLoadDemo = () => {
+  const handleLoadDemo = async () => {
     if (typeof window !== "undefined") {
       const demo = window.location.origin + "/ees_template.csv";
       setTempUrl(demo);
       setSyncUrl(demo);
+      await triggerSync(demo);
     }
   };
 
