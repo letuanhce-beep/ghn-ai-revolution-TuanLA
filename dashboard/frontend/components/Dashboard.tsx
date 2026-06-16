@@ -366,7 +366,7 @@ function DashboardContent() {
           {/* ── Footer ── */}
           <footer className="py-4 bg-white rounded-xl border border-slate-200/80 px-6 flex items-center justify-between text-[11px] shadow-sm"
                   style={{ color: "var(--text-muted)" }}>
-            <span>© 2026 GiaoHangNhanh · Bộ phận Nhân lực & EX · Bảo mật nội bộ</span>
+            <span>© 2026 GiaoHangNhanh · HR Division - Employee Experience Department · Bảo mật nội bộ</span>
             <span>EES Dashboard v3.1 · Dữ liệu khảo sát Q1/2026 · 23,412 respondents</span>
           </footer>
         </div>
