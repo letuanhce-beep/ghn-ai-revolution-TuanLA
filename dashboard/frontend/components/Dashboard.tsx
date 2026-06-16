@@ -246,7 +246,7 @@ function DashboardContent() {
       {/* ── Main Layout (Sidebar + Content) ── */}
       <div className="max-w-[1440px] mx-auto px-6 py-6 flex gap-6 items-start">
         {/* Left Sidebar Wrapper (Sticky & Relative for Popout Chatbot) */}
-        <div className="w-[280px] shrink-0 sticky top-[135px] relative">
+        <div className="w-[280px] shrink-0 sticky top-[135px] relative z-30">
           <aside className="w-full flex flex-col gap-6 max-h-[calc(100vh-160px)] overflow-y-auto scrollbar-hide">
             {/* Vertical Navigation Card (Gradient Xanh dương GHN) */}
             <div className="bg-gradient-to-b from-[#006FAD] to-[#002D4B] rounded-[24px] p-4 shadow-xl border border-white/10 flex flex-col gap-1 transition-all duration-150">
