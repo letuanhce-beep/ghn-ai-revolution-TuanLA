@@ -17,15 +17,22 @@ export async function POST(request: Request) {
     const email = item.email.trim().toLowerCase();
     const list = await getWhitelistFromServer();
 
-    if (list.some((i: any) => i.email.toLowerCase() === email)) {
-      return NextResponse.json({ error: "Email này đã có trong danh sách uỷ quyền" }, { status: 400 });
+    const existingIndex = list.findIndex((i: any) => i.email.toLowerCase() === email);
+    let newList;
+    if (existingIndex >= 0) {
+      newList = [...list];
+      newList[existingIndex] = {
+        email,
+        role: item.role || "KHOI_LEADER",
+        scope: item.scope || ""
+      };
+    } else {
+      newList = [...list, {
+        email,
+        role: item.role || "KHOI_LEADER",
+        scope: item.scope || ""
+      }];
     }
-
-    const newList = [...list, {
-      email,
-      role: item.role || "KHOI_LEADER",
-      scope: item.scope || ""
-    }];
 
     await saveWhitelistToServer(newList);
     const isPersistent = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
