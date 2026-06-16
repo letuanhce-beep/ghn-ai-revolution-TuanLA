@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback, useMemo } from "react";
-import { useDashboard } from "@/context/DashboardContext";
+import { useDashboard, EesData } from "@/context/DashboardContext";
 import {
   kpiData, getKpiForYear, divisionData, riskZones, actionItems,
   companyAvgPillars, BENCHMARK, quickWins, eNPSWaterfall,
@@ -136,21 +136,24 @@ interface SummaryVariation {
   text: string;
 }
 
-function generateSummaryVariations(year: number, variant: number): SummaryVariation[] {
-  const cur  = getKpiForYear(year)!;
-  const prev = getKpiForYear(year === 2026 ? 2025 : 2026)!;
+function generateSummaryVariations(year: number, variant: number, eesData: EesData, actionItems: any[]): SummaryVariation[] {
+  const { kpiData, divisionData, riskZones, companyAvgPillars } = eesData;
+  const getKpiForYear = (y: number) => kpiData.find((d) => d.year === y);
+  
+  const cur  = getKpiForYear(year) || kpiData[0] || { engagementIndex: 0, eNPS: 0, attritionRisk: 0, responseRate: 0 };
+  const prev = getKpiForYear(year === 2026 ? 2025 : 2026) || kpiData[0] || { engagementIndex: 0, eNPS: 0, attritionRisk: 0, responseRate: 0 };
   const EI_DELTA   = cur.engagementIndex - prev.engagementIndex;
   const ENPS_DELTA = cur.eNPS - prev.eNPS;
   const ATTR_DELTA = cur.attritionRisk - prev.attritionRisk;
 
-  const topRisk     = riskZones[0];
+  const topRisk     = riskZones[0] || { dept: "Chưa rõ", khoi: "Chưa rõ", engagementIndex: 0, eNPS: 0, attrition: 0 };
   const doneCnt     = actionItems.filter((a) => a.status === "Hoàn thành").length;
   const lateCnt     = actionItems.filter((a) => a.status === "Trễ hạn").length;
   const inProgress  = actionItems.filter((a) => a.status === "Đang làm").length;
   const bestKhoi    = [...divisionData].sort((a, b) =>
-    (year === 2026 ? b.ei2026 - a.ei2026 : b.ei2025 - a.ei2025))[0];
+    (year === 2026 ? b.ei2026 - a.ei2026 : b.ei2025 - a.ei2025))[0] || { khoiLabel: "Chưa rõ", ei2026: 0, ei2025: 0, eNPS2026: 0, eNPS2025: 0 };
   const worstKhoi   = [...divisionData].sort((a, b) =>
-    (year === 2026 ? a.ei2026 - b.ei2026 : a.ei2025 - b.ei2025))[0];
+    (year === 2026 ? a.ei2026 - b.ei2026 : a.ei2025 - b.ei2025))[0] || { khoiLabel: "Chưa rõ", ei2026: 0, ei2025: 0, eNPS2026: 0, eNPS2025: 0, attrition2026: 0, attrition2025: 0 };
 
   // Analytics engine calculations
   const pillarScores = companyAvgPillars[year] || companyAvgPillars[2026];
@@ -247,13 +250,14 @@ interface Recommendation {
   pillarId: string;
 }
 
-function generateRecommendations(year: number): Recommendation[] {
-  const pillarScores = companyAvgPillars[year] || companyAvgPillars[2026];
+function generateRecommendations(year: number, eesData: EesData): Recommendation[] {
+  const { companyAvgPillars, divisionData } = eesData;
+  const pillarScores = companyAvgPillars[year] || companyAvgPillars[2026] || { TC1: 3.5, TC2: 3.5, TC3: 3.5, TC4: 3.5, TC5: 3.5 };
   const gaps = calcPillarGaps(pillarScores);
   const sorted = [...gaps].sort((a, b) => a.score - b.score);
 
   const worstKhoi = [...divisionData].sort((a, b) =>
-    (year === 2026 ? a.ei2026 - b.ei2026 : a.ei2025 - b.ei2025))[0];
+    (year === 2026 ? a.ei2026 - b.ei2026 : a.ei2025 - b.ei2025))[0] || { khoiLabel: "Chưa rõ" };
 
   const recommendationMap: Record<string, Recommendation> = {
     TC4: {
@@ -317,7 +321,8 @@ const PRIORITY_COLORS: Record<string, { bg: string; text: string; border: string
 };
 
 function PriorityRecommendations({ year }: { year: number }) {
-  const recommendations = useMemo(() => generateRecommendations(year), [year]);
+  const { eesData } = useDashboard();
+  const recommendations = useMemo(() => generateRecommendations(year, eesData), [year, eesData]);
 
   return (
     <div className="mt-6">
@@ -378,17 +383,39 @@ function PriorityRecommendations({ year }: { year: number }) {
 // ── Executive Summary ─────────────────────────────────────────
 
 function ExecutiveSummary({ year }: { year: number }) {
-  const cur  = getKpiForYear(year)!;
-  const prev = getKpiForYear(year === 2026 ? 2025 : 2026)!;
+  const { eesData } = useDashboard();
+  const { kpiData, companyAvgPillars } = eesData;
+  const getKpiForYear = (y: number) => kpiData.find((d) => d.year === y);
+
+  const cur  = getKpiForYear(year) || kpiData[0] || { engagementIndex: 0, eNPS: 0, attritionRisk: 0, responseRate: 0 };
+  const prev = getKpiForYear(year === 2026 ? 2025 : 2026) || kpiData[0] || { engagementIndex: 0, eNPS: 0, attritionRisk: 0, responseRate: 0 };
   const EI_DELTA   = cur.engagementIndex - prev.engagementIndex;
   const ENPS_DELTA = cur.eNPS - prev.eNPS;
   const ATTR_DELTA = cur.attritionRisk - prev.attritionRisk;
 
   // Analytics engine scores
-  const pillarScores = companyAvgPillars[year] || companyAvgPillars[2026];
+  const pillarScores = companyAvgPillars[year] || companyAvgPillars[2026] || { TC1: 3.5, TC2: 3.5, TC3: 3.5, TC4: 3.5, TC5: 3.5 };
   const exIndex = calcEXIndex(pillarScores);
   const enpsClass = classifyENPS(cur.eNPS);
   const riskProfile = calcDisengagementRisk(cur);
+
+  // Load action items from localStorage
+  const [actions, setActions] = useState<any[]>([]);
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("ghn-ees-action-items");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setActions(parsed);
+            return;
+          }
+        }
+      } catch {}
+    }
+    setActions(actionItems);
+  }, []);
 
   // Re-analysis state
   const [isAnalyzing, setIsAnalyzing] = useState(false);
@@ -406,8 +433,8 @@ function ExecutiveSummary({ year }: { year: number }) {
   }, []);
 
   const paragraphs = useMemo(
-    () => generateSummaryVariations(year, variant),
-    [year, variant]
+    () => generateSummaryVariations(year, variant, eesData, actions),
+    [year, variant, eesData, actions]
   );
 
   return (

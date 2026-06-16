@@ -1,11 +1,10 @@
 "use client";
 
+import { useDashboard } from "@/context/DashboardContext";
 import {
   pillarScoresByGroup,
-  divisionData,
   eNPSWaterfall,
   PILLARS,
-  companyAvgPillars,
 } from "@/lib/mockData";
 import {
   LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip,
@@ -17,15 +16,17 @@ import { TrendingUp, TrendingDown, Minus } from "lucide-react";
 // ── Slope / Dual-Line Chart for 5 Pillars ────────────────────
 
 function PillarTrendChart() {
+  const { eesData } = useDashboard();
+  const { companyAvgPillars } = eesData;
   // Company average pillar trend 2025 → 2026
   const data = [
     {
       year: "2025",
-      ...companyAvgPillars[2025],
+      ...(companyAvgPillars[2025] || { TC1: 3.5, TC2: 3.5, TC3: 3.5, TC4: 3.5, TC5: 3.5 }),
     },
     {
       year: "2026",
-      ...companyAvgPillars[2026],
+      ...(companyAvgPillars[2026] || { TC1: 3.5, TC2: 3.5, TC3: 3.5, TC4: 3.5, TC5: 3.5 }),
     },
   ];
 
@@ -132,6 +133,8 @@ function WaterfallChart() {
 // ── YoY Variance Table ────────────────────────────────────────
 
 function VarianceTable() {
+  const { eesData } = useDashboard();
+  const { divisionData } = eesData;
   return (
     <div className="overflow-x-auto">
       <table className="w-full text-sm">
@@ -221,6 +224,11 @@ function DeltaBadge({
 // ── Main Tab ──────────────────────────────────────────────────
 
 export default function TabLichSu() {
+  const { eesData } = useDashboard();
+  const { companyAvgPillars } = eesData;
+  const avg26 = companyAvgPillars[2026] || { TC1: 3.5, TC2: 3.5, TC3: 3.5, TC4: 3.5, TC5: 3.5 };
+  const avg25 = companyAvgPillars[2025] || { TC1: 3.5, TC2: 3.5, TC3: 3.5, TC4: 3.5, TC5: 3.5 };
+
   return (
     <div className="space-y-6">
       {/* Trend Chart */}
@@ -236,15 +244,15 @@ export default function TabLichSu() {
         {/* Delta Summary */}
         <div className="grid grid-cols-5 gap-3 mt-4">
           {PILLARS.map((p) => {
-            const delta =
-              (companyAvgPillars[2026][p.id as keyof typeof companyAvgPillars[2026]] -
-               companyAvgPillars[2025][p.id as keyof typeof companyAvgPillars[2025]]).toFixed(2);
+            const val26 = avg26[p.id as keyof typeof avg26] || 0;
+            const val25 = avg25[p.id as keyof typeof avg25] || 0;
+            const delta = (val26 - val25).toFixed(2);
             const isPositive = parseFloat(delta) > 0;
             return (
               <div key={p.id} className="text-center bg-slate-50 rounded-xl p-3">
                 <p className="text-xs font-bold text-slate-500">{p.id}</p>
                 <p className="text-lg font-bold text-slate-800 mt-1">
-                  {companyAvgPillars[2026][p.id as keyof typeof companyAvgPillars[2026]].toFixed(2)}
+                  {val26.toFixed(2)}
                 </p>
                 <p className={`text-xs font-medium mt-0.5 ${isPositive ? "text-green-600" : "text-red-500"}`}>
                   {isPositive ? "▲" : "▼"} {Math.abs(parseFloat(delta))} vs 2025

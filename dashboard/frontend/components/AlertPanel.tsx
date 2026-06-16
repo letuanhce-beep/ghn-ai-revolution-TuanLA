@@ -1,8 +1,9 @@
 "use client";
 
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { Bell, X, AlertTriangle, TrendingDown, TrendingUp, Shield, Info } from "lucide-react";
-import { kpiData, divisionData, groupEngagement, actionItems, BENCHMARK, riskZones } from "@/lib/mockData";
+import { useDashboard, EesData } from "@/context/DashboardContext";
+import { BENCHMARK, actionItems as defaultActionItems } from "@/lib/mockData";
 
 interface Alert {
   id: string;
@@ -15,9 +16,10 @@ interface Alert {
   timestamp: Date;
 }
 
-function generateAlerts(): Alert[] {
-  const kpi26 = kpiData.find(d => d.year === 2026)!;
-  const kpi25 = kpiData.find(d => d.year === 2025)!;
+function generateAlerts(eesData: EesData, actionItems: any[]): Alert[] {
+  const { kpiData, divisionData, groupEngagement, riskZones } = eesData;
+  const kpi26 = kpiData.find(d => d.year === 2026) || kpiData[0] || { year: 2026, engagementIndex: 0, eNPS: 0, attritionRisk: 0, responseRate: 0 };
+  const kpi25 = kpiData.find(d => d.year === 2025) || kpiData[0] || { year: 2025, engagementIndex: 0, eNPS: 0, attritionRisk: 0, responseRate: 0 };
   const alerts: Alert[] = [];
   const now = new Date();
 
@@ -137,9 +139,28 @@ const SEVERITY_CONFIG = {
 };
 
 export default function AlertPanel() {
+  const { eesData } = useDashboard();
+  const [actions, setActions] = useState<any[]>([]);
+
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("ghn-ees-action-items");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setActions(parsed);
+            return;
+          }
+        }
+      } catch {}
+    }
+    setActions(defaultActionItems);
+  }, []);
+
   const [isOpen, setIsOpen] = useState(false);
   const [dismissedIds, setDismissedIds] = useState<Set<string>>(new Set());
-  const alerts = useMemo(() => generateAlerts(), []);
+  const alerts = useMemo(() => generateAlerts(eesData, actions), [eesData, actions]);
 
   const visibleAlerts = alerts.filter(a => !dismissedIds.has(a.id));
   const criticalCount = visibleAlerts.filter(a => a.severity === "critical" || a.severity === "warning").length;

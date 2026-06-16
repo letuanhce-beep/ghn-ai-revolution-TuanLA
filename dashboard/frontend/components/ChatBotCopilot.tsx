@@ -2,11 +2,16 @@
 
 import { useState, useRef, useEffect, useCallback } from "react";
 import { MessageCircle, X, Send, Bot, User, Sparkles } from "lucide-react";
+import { useDashboard, EesData } from "@/context/DashboardContext";
 import {
-  kpiData, groupEngagement, divisionData, BENCHMARK,
-  questionScores, riskZones, excellenceZones, actionItems,
-  pillarScoresByGroup, companyAvgPillars, sentimentData,
-  PILLARS, KHOI, NHOM_NV,
+  BENCHMARK,
+  questionScores,
+  pillarScoresByGroup,
+  sentimentData,
+  PILLARS,
+  KHOI,
+  NHOM_NV,
+  actionItems as defaultActionItems,
 } from "@/lib/mockData";
 
 interface Message {
@@ -16,10 +21,12 @@ interface Message {
 }
 
 // ── Knowledge Base for smart responses ──
-function generateResponse(query: string): string {
+function generateResponse(query: string, eesData: EesData, actionItems: any[]): string {
   const q = query.toLowerCase().trim();
-  const kpi26 = kpiData.find(d => d.year === 2026)!;
-  const kpi25 = kpiData.find(d => d.year === 2025)!;
+  const { kpiData, groupEngagement, divisionData, riskZones, excellenceZones, companyAvgPillars } = eesData;
+  
+  const kpi26 = kpiData.find(d => d.year === 2026) || kpiData[0] || { year: 2026, engagementIndex: 0, eNPS: 0, attritionRisk: 0, responseRate: 0 };
+  const kpi25 = kpiData.find(d => d.year === 2025) || kpiData[0] || { year: 2025, engagementIndex: 0, eNPS: 0, attritionRisk: 0, responseRate: 0 };
 
   // Greeting
   if (/^(hi|hello|xin ch[aà]o|ch[aà]o|hey)/.test(q)) {
@@ -249,7 +256,26 @@ const SUGGESTED_QUESTIONS = [
 ];
 
 export default function ChatBotCopilot() {
+  const { eesData } = useDashboard();
+  const [actions, setActions] = useState<any[]>([]);
   const [isOpen, setIsOpen] = useState(false);
+
+  useEffect(() => {
+    if (isOpen && typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("ghn-ees-action-items");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setActions(parsed);
+            return;
+          }
+        }
+      } catch {}
+      setActions(defaultActionItems);
+    }
+  }, [isOpen]);
+
   const [messages, setMessages] = useState<Message[]>([
     {
       role: "bot",
@@ -286,12 +312,12 @@ export default function ChatBotCopilot() {
     // Simulate AI thinking delay
     const delay = 800 + Math.random() * 1200;
     setTimeout(() => {
-      const response = generateResponse(trimmed);
+      const response = generateResponse(trimmed, eesData, actions);
       const botMsg: Message = { role: "bot", content: response, timestamp: new Date() };
       setMessages(prev => [...prev, botMsg]);
       setIsTyping(false);
     }, delay);
-  }, [input, isTyping]);
+  }, [input, isTyping, eesData, actions]);
 
   const handleSuggestedClick = useCallback((question: string) => {
     setInput(question);
@@ -301,14 +327,14 @@ export default function ChatBotCopilot() {
       setIsTyping(true);
       const delay = 800 + Math.random() * 1200;
       setTimeout(() => {
-        const response = generateResponse(question);
+        const response = generateResponse(question, eesData, actions);
         const botMsg: Message = { role: "bot", content: response, timestamp: new Date() };
         setMessages(prev => [...prev, botMsg]);
         setIsTyping(false);
       }, delay);
       setInput("");
     }, 100);
-  }, []);
+  }, [eesData, actions]);
 
   return (
     <>

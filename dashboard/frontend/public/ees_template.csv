@@ -1,0 +1,96 @@
+# ============================================================
+# GHN EES 2026 Dashboard – Flat CSV Database Template
+# ============================================================
+
+# ── kpiData ────────────────────────────────────────────────
+kpiData,year,engagementIndex,eNPS,attritionRisk,responseRate
+kpiData,2025,68,12,22,74
+kpiData,2026,73,24,17,81
+
+# ── divisionData ───────────────────────────────────────────
+divisionData,khoiId,khoiLabel,eNPS2025,eNPS2026,ei2025,ei2026,attrition2025,attrition2026,mei2025,mei2026
+divisionData,TC,Khối Tech,38,52,76,80,12,9,4.2,4.5
+divisionData,TCS,Khối Tài Chính,32,42,74,78,10,8,4.0,4.2
+divisionData,NL,Khối Nhân Lực,28,36,73,77,14,11,3.9,4.1
+divisionData,KH,Khối Khách Hàng,10,20,67,71,20,16,3.6,3.8
+divisionData,TT,Khối Thị Trường,8,16,65,70,24,19,3.5,3.7
+divisionData,VH,Khối Vận Hành,-4,8,60,65,32,26,3.2,3.5
+
+# ── groupEngagement ────────────────────────────────────────
+groupEngagement,group,label,ei2025,ei2026,eNPS2025,eNPS2026,attrition2025,attrition2026
+groupEngagement,1A,1A – Shipper,61,66,-5,8,31,25
+groupEngagement,1B,1B – Tài xế,65,70,5,18,26,20
+groupEngagement,2A,2A – NV Kho,63,68,0,12,28,21
+groupEngagement,2B,2B – QL Tuyến đầu,70,74,15,26,18,14
+groupEngagement,3A,3A – NV Văn phòng,72,77,22,35,16,12
+groupEngagement,3B,3B – Manager/Dir,78,82,40,48,9,7
+
+# ── riskZones ──────────────────────────────────────────────
+riskZones,dept,khoi,attrition,engagementIndex,eNPS,pillarWeakest
+riskZones,Giao Hàng Chặng Cuối,Khối Vận Hành,35,58,-10,TC4 – Thu nhập
+riskZones,Quản lý Kho & Hub,Khối Vận Hành,30,62,-2,TC2 – Quản lý
+riskZones,Kinh Doanh Vùng,Khối Thị Trường,28,63,4,TC4 – Thu nhập
+
+# ── excellenceZones ────────────────────────────────────────
+excellenceZones,dept,khoi,attrition,engagementIndex,eNPS,pillarWeakest
+excellenceZones,Software Engineering,Khối Tech,8,83,58,
+excellenceZones,Data & Analytics,Khối Tech,9,81,54,
+excellenceZones,Kế Toán & Kiểm Soát,Khối Tài Chính,7,80,46,
+
+# ── pillarScoresByGroup ────────────────────────────────────
+pillarScoresByGroup,group,year,TC1,TC2,TC3,TC4,TC5
+pillarScoresByGroup,1A,2025,3.1,3.2,3.5,2.9,3.3
+pillarScoresByGroup,1A,2026,3.4,3.5,3.7,3.1,3.6
+pillarScoresByGroup,1B,2025,3.3,3.4,3.6,3.1,3.4
+pillarScoresByGroup,1B,2026,3.6,3.7,3.8,3.3,3.7
+pillarScoresByGroup,2A,2025,3.2,3.3,3.5,3.0,3.4
+pillarScoresByGroup,2A,2026,3.5,3.6,3.8,3.2,3.7
+pillarScoresByGroup,2B,2025,3.6,3.7,3.8,3.4,3.8
+pillarScoresByGroup,2B,2026,3.8,3.9,4.0,3.6,4.0
+pillarScoresByGroup,3A,2025,3.8,3.8,4.0,3.5,3.9
+pillarScoresByGroup,3A,2026,4.0,4.1,4.2,3.8,4.2
+pillarScoresByGroup,3B,2025,4.1,4.2,4.3,3.9,4.2
+pillarScoresByGroup,3B,2026,4.4,4.5,4.5,4.1,4.4
+
+# ── companyAvgPillars ──────────────────────────────────────
+companyAvgPillars,year,TC1,TC2,TC3,TC4,TC5
+companyAvgPillars,2025,3.52,3.60,3.78,3.30,3.67
+companyAvgPillars,2026,3.78,3.88,4.00,3.52,3.93
+
+# ── divPillarScores ────────────────────────────────────────
+divPillarScores,khoiId,khoiLabel,TC1,TC2,TC3,TC4,TC5
+divPillarScores,TT,Khối Thị Trường,3.5,3.6,3.8,3.2,3.7
+divPillarScores,VH,Khối Vận Hành,3.2,3.3,3.5,2.9,3.4
+divPillarScores,KH,Khối Khách Hàng,3.6,3.7,3.9,3.4,3.8
+divPillarScores,TC,Khối Tech,4.1,4.2,4.3,3.9,4.3
+divPillarScores,NL,Khối Nhân Lực,3.9,4.0,4.1,3.7,4.1
+divPillarScores,TCS,Khối Tài Chính,4.0,4.1,4.2,3.8,4.1
+
+# ── questionScores ─────────────────────────────────────────
+questionScores,id,pillar,question,score2025,score2026,delta
+questionScores,Q01,TC1,Tôi tin tưởng vào Ban lãnh đạo cấp cao của GHN.,3.4,3.7,0.3
+questionScores,Q02,TC1,Ban lãnh đạo truyền đạt định hướng chiến lược rõ ràng.,3.3,3.6,0.3
+questionScores,Q03,TC1,GHN thực hiện đúng những điều đã cam kết với nhân viên.,3.5,3.9,0.4
+questionScores,Q04,TC1,Tôi tự hào khi được làm việc tại GHN.,3.8,4.1,0.3
+questionScores,Q05,TC1,Tôi hiểu rõ chiến lược và mục tiêu dài hạn của GHN.,3.6,3.8,0.2
+questionScores,Q06,TC2,Quản lý trực tiếp của tôi hỗ trợ và phát triển tôi.,3.5,3.9,0.4
+questionScores,Q07,TC2,Tôi nhận được phản hồi thường xuyên và có giá trị.,3.2,3.7,0.5
+questionScores,Q08,TC2,Quản lý của tôi công nhận đóng góp của tôi kịp thời.,3.4,3.8,0.4
+questionScores,Q09,TC2,Quản lý của tôi xử lý các vấn đề của nhóm một cách công bằng.,3.6,4.0,0.4
+questionScores,Q10,TC2,Tôi cảm thấy được lắng nghe bởi quản lý của mình.,3.7,4.0,0.3
+questionScores,Q11,TC3,Công việc của tôi có ý nghĩa và tôi thấy được đóng góp.,3.9,4.2,0.3
+questionScores,Q12,TC3,Tôi có đủ nguồn lực để hoàn thành công việc hiệu quả.,3.4,3.8,0.4
+questionScores,Q13,TC3,Kỳ vọng công việc của tôi được truyền đạt rõ ràng.,3.7,4.0,0.3
+questionScores,Q14,TC3,Tôi có cơ hội phát triển kỹ năng và thăng tiến.,3.5,3.9,0.4
+questionScores,Q15,TC3,Khối lượng công việc của tôi ở mức hợp lý và bền vững.,3.3,3.7,0.4
+questionScores,Q16,TC3,Tôi có quyền tự chủ phù hợp trong công việc.,3.6,3.9,0.3
+questionScores,Q17,TC4,Mức lương của tôi phản ánh đúng đóng góp và năng lực.,3.0,3.4,0.4
+questionScores,Q18,TC4,Hệ thống khen thưởng và phúc lợi của GHN cạnh tranh.,3.2,3.6,0.4
+questionScores,Q19,TC4,Tôi hiểu rõ cách thu nhập của mình được tính toán.,3.4,3.7,0.3
+questionScores,Q20,TC4,GHN đối xử công bằng trong việc trao thưởng và ghi nhận.,3.5,3.8,0.3
+questionScores,Q21,TC5,Môi trường làm việc của tôi an toàn và thoải mái.,3.7,4.0,0.3
+questionScores,Q22,TC5,Văn hóa GHN khuyến khích sự hợp tác và hỗ trợ lẫn nhau.,3.8,4.1,0.3
+questionScores,Q23,TC5,GHN tôn trọng sự đa dạng và hòa nhập (D&I).,3.9,4.2,0.3
+questionScores,Q24,TC5,Tôi có thể cân bằng tốt giữa công việc và cuộc sống cá nhân.,3.5,3.8,0.3
+questionScores,Q25,TC5,GHN quan tâm đến sức khỏe thể chất và tinh thần của nhân viên.,3.6,3.9,0.3
+questionScores,Q26,eNPS,Bạn có sẵn sàng giới thiệu GHN là nơi làm việc tốt? (0–10),3.1,3.6,0.5

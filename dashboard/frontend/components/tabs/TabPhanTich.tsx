@@ -2,8 +2,7 @@
 
 import { useDashboard } from "@/context/DashboardContext";
 import {
-  pillarScoresByGroup, companyAvgPillars, divPillarScores,
-  sentimentData, PILLARS, NHOM_NV, questionScores,
+  sentimentData, PILLARS, NHOM_NV,
   demographicGeneration, demographicSeniority, demographicByKhoi,
   eNPSByGeneration,
 } from "@/lib/mockData";
@@ -40,9 +39,11 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 // ── Radar Chart ───────────────────────────────────────────────
 
 function PillarRadar({ groupId, year }: { groupId: string; year: number }) {
+  const { eesData } = useDashboard();
+  const { pillarScoresByGroup, companyAvgPillars } = eesData;
   const groupScores = pillarScoresByGroup.find((p) => p.group === groupId && p.year === year);
   const prev        = pillarScoresByGroup.find((p) => p.group === groupId && p.year === year - 1);
-  const companyAvg  = companyAvgPillars[year];
+  const companyAvg  = companyAvgPillars[year] || { TC1: 3.5, TC2: 3.5, TC3: 3.5, TC4: 3.5, TC5: 3.5 };
 
   if (!groupScores) return (
     <div className="flex items-center justify-center h-60 text-slate-400 text-sm">
@@ -81,9 +82,11 @@ function PillarRadar({ groupId, year }: { groupId: string; year: number }) {
 // ── Question Drill-down ───────────────────────────────────────
 
 function QuestionDrilldown({ pillarId, year }: { pillarId: string; year: number }) {
+  const { eesData } = useDashboard();
+  const { questionScores } = eesData;
   const questions = questionScores.filter((q) => q.pillar === pillarId);
-  const score2025 = questions.reduce((s, q) => s + q.score2025, 0) / questions.length;
-  const score2026 = questions.reduce((s, q) => s + q.score2026, 0) / questions.length;
+  const score2025 = questions.length > 0 ? questions.reduce((s, q) => s + q.score2025, 0) / questions.length : 0;
+  const score2026 = questions.length > 0 ? questions.reduce((s, q) => s + q.score2026, 0) / questions.length : 0;
 
   return (
     <div className="space-y-2 animate-fadeIn">
@@ -125,6 +128,8 @@ function QuestionDrilldown({ pillarId, year }: { pillarId: string; year: number 
 // ── Heatmap Table ─────────────────────────────────────────────
 
 function HeatmapTable() {
+  const { eesData } = useDashboard();
+  const { divPillarScores } = eesData;
   const [expanded, setExpanded] = useState<string | null>(null);
 
   const getColor = (score: number) => {
@@ -351,7 +356,8 @@ function DemographicPanel() {
 // ── Main Tab ──────────────────────────────────────────────────
 
 export default function TabPhanTich() {
-  const { filters } = useDashboard();
+  const { filters, eesData } = useDashboard();
+  const { pillarScoresByGroup, companyAvgPillars } = eesData;
   const [selectedGroup, setSelectedGroup] = useState("3A");
   const [expandedPillar, setExpandedPillar] = useState<string | null>(null);
 

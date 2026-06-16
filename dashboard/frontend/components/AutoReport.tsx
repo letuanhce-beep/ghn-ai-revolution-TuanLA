@@ -1,16 +1,15 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { FileText, Download, Loader2, CheckCircle2 } from "lucide-react";
-import {
-  kpiData, divisionData, groupEngagement, riskZones, excellenceZones,
-  actionItems, companyAvgPillars, BENCHMARK, eNPSWaterfall,
-} from "@/lib/mockData";
+import { useDashboard, EesData } from "@/context/DashboardContext";
+import { BENCHMARK, actionItems as defaultActionItems } from "@/lib/mockData";
 
-function generateReportText(): string {
-  const kpi26 = kpiData.find(d => d.year === 2026)!;
-  const kpi25 = kpiData.find(d => d.year === 2025)!;
-  const avg = companyAvgPillars[2026];
+function generateReportText(eesData: EesData, actionItems: any[], syncSource: string | null, lastSyncTime: string | null): string {
+  const { kpiData, companyAvgPillars, divisionData, riskZones, excellenceZones } = eesData;
+  const kpi26 = kpiData.find(d => d.year === 2026) || kpiData[0] || { year: 2026, engagementIndex: 0, eNPS: 0, attritionRisk: 0, responseRate: 0 };
+  const kpi25 = kpiData.find(d => d.year === 2025) || kpiData[0] || { year: 2025, engagementIndex: 0, eNPS: 0, attritionRisk: 0, responseRate: 0 };
+  const avg = companyAvgPillars[2026] || companyAvgPillars[2025] || { TC1: 3.5, TC2: 3.5, TC3: 3.5, TC4: 3.5, TC5: 3.5 };
   const completed = actionItems.filter(a => a.status === "Hoàn thành").length;
   const overdue = actionItems.filter(a => a.status === "Trễ hạn").length;
   const now = new Date();
@@ -108,20 +107,43 @@ P3 (Dài hạn):
 ═══════════════════════════════════════════════════════════════
 
 Báo cáo được tạo tự động bởi GHN EES Dashboard v3.1
+Nguồn dữ liệu: ${syncSource || "Mặc định (Mock Data)"}
+Thời gian đồng bộ dữ liệu: ${lastSyncTime || "Chưa có đồng bộ"}
 © 2026 GiaoHangNhanh · Bộ phận Nhân lực & EX · Bảo mật nội bộ
 `;
 }
 
 export default function AutoReport() {
+  const { eesData, syncSource, lastSyncTime } = useDashboard();
+  const [actions, setActions] = useState<any[]>([]);
   const [isGenerating, setIsGenerating] = useState(false);
   const [isDone, setIsDone] = useState(false);
+
+  // Load action items
+  const loadActions = () => {
+    if (typeof window !== "undefined") {
+      try {
+        const raw = localStorage.getItem("ghn-ees-action-items");
+        if (raw) {
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            setActions(parsed);
+            return parsed;
+          }
+        }
+      } catch {}
+    }
+    setActions(defaultActionItems);
+    return defaultActionItems;
+  };
 
   const handleExport = () => {
     setIsGenerating(true);
     setIsDone(false);
 
     setTimeout(() => {
-      const report = generateReportText();
+      const currentActions = loadActions();
+      const report = generateReportText(eesData, currentActions, syncSource, lastSyncTime);
       // Create and download file
       const BOM = "\uFEFF";
       const blob = new Blob([BOM + report], { type: "text/plain;charset=utf-8" });

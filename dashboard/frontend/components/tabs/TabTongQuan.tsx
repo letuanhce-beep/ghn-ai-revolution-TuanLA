@@ -1,10 +1,7 @@
 "use client";
 
 import { useDashboard } from "@/context/DashboardContext";
-import {
-  kpiData, groupEngagement, divisionData, riskZones, excellenceZones,
-  getKpiForYear, BENCHMARK,
-} from "@/lib/mockData";
+import { BENCHMARK, ZoneData } from "@/lib/mockData";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   Cell, LabelList, ReferenceLine, PieChart, Pie, Legend,
@@ -170,7 +167,7 @@ const CustomTooltip = ({ active, payload, label }: any) => {
 
 // ── Zone Card ─────────────────────────────────────────────────
 
-function ZoneCard({ zone, type }: { zone: typeof riskZones[0]; type: "risk" | "excellence" }) {
+function ZoneCard({ zone, type }: { zone: ZoneData; type: "risk" | "excellence" }) {
   const isRisk = type === "risk";
   return (
     <div className={`rounded-xl p-4 border ${isRisk ? "border-red-100 bg-red-50" : "border-green-100 bg-green-50"}`}>
@@ -209,9 +206,13 @@ const GHN_ORANGE = "#FF5200";
 const GHN_NAVY   = "#006FAD";
 
 export default function TabTongQuan() {
-  const { filters } = useDashboard();
-  const curKpi  = getKpiForYear(filters.year)!;
-  const prevKpi = getKpiForYear(filters.year === 2026 ? 2025 : 2026)!;
+  const { filters, eesData } = useDashboard();
+  const { kpiData, groupEngagement, divisionData, riskZones, excellenceZones } = eesData;
+  
+  const getKpiForYear = (y: number) => kpiData.find((d) => d.year === y);
+
+  const curKpi  = getKpiForYear(filters.year) || kpiData[0] || { engagementIndex: 0, eNPS: 0, attritionRisk: 0, responseRate: 0 };
+  const prevKpi = getKpiForYear(filters.year === 2026 ? 2025 : 2026) || kpiData[0] || { engagementIndex: 0, eNPS: 0, attritionRisk: 0, responseRate: 0 };
 
   const EI_DELTA   = curKpi.engagementIndex - prevKpi.engagementIndex;
   const ENPS_DELTA = curKpi.eNPS - prevKpi.eNPS;

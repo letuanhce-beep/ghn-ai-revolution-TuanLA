@@ -32,6 +32,25 @@ Dashboard cung cấp cái nhìn toàn diện về mức độ gắn kết, eNPS,
 
 ---
 
+## 🔄 Tự động Đồng bộ Dữ liệu từ URL (Google Sheets / JSON)
+
+Hệ thống hỗ trợ cơ chế đồng bộ hóa dữ liệu khảo sát thời gian thực tự động từ URL liên kết:
+
+### 1. Đồng bộ từ Google Sheets (CSV)
+Bạn có thể quản lý cơ sở dữ liệu EES trực tiếp trên Google Sheets. Hệ thống sẽ tự động quét và bóc tách dữ liệu thông qua cấu trúc **Flat CSV**:
+1. Tải tệp dữ liệu mẫu chuẩn [ees_template.csv](file:///Users/tuanleanh/Documents/Antigravity/GHN-EES-2026/dashboard/frontend/public/ees_template.csv) (cũng có sẵn nút tải trực tiếp trong Dashboard).
+2. Tạo một Google Sheet mới và dán dữ liệu mẫu này vào.
+3. Vào **Tệp (File) ➡️ Chia sẻ (Share) ➡️ Công bố công khai lên web (Publish to web)**.
+4. Chọn xuất **Trang tính hiện tại** dưới dạng **CSV (.csv)** và bấm **Công bố**.
+5. Copy đường dẫn công bố và dán vào Bộ quản lý Đồng bộ của Dashboard.
+   * *Mẹo: Dashboard hỗ trợ tự động nhận dạng và chuyển đổi link chia sẻ chuẩn của Google Sheets thành link tải CSV, bạn có thể dán trực tiếp link chia sẻ.*
+
+### 2. Tự động cập nhật
+* Khi bật tùy chọn **"Tự động đồng bộ khi mở trang"**, mỗi khi người dùng truy cập hoặc tải lại trang Dashboard, hệ sinh thái sẽ tự động gọi HTTP request tới Google Sheet để kéo dữ liệu mới nhất mà không cần nạp thủ công.
+* Dữ liệu đồng bộ thành công được lưu trữ cục bộ vào `localStorage` của trình duyệt để duy trì trạng thái khi mất mạng hoặc tải lại trang.
+
+---
+
 ## 🛠 Tech Stack
 
 | Layer | Công nghệ |
