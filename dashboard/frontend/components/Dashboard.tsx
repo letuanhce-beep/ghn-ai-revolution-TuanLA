@@ -114,107 +114,113 @@ export default function Dashboard() {
           </div>
         </header>
 
-        {/* ── Tab Navigation ── */}
-        <div className="bg-white sticky z-30"
-             style={{ top: "97px", borderBottom: "1px solid var(--ghn-border)" }}>
-          <div className="max-w-[1440px] mx-auto px-6">
-            <nav className="flex gap-0.5 overflow-x-auto scrollbar-hide">
-              {TABS.map((tab) => {
-                const isActive = activeTab === tab.id;
-                const isAI = tab.id === "insights";
-                return (
-                  <button
-                    key={tab.id}
-                    id={`tab-${tab.id}`}
-                    onClick={() => setActiveTab(tab.id)}
-                    className={`flex items-center gap-2 px-4 py-3 text-[13px] font-semibold whitespace-nowrap border-b-2 transition-all duration-150 ${
-                      isActive
-                        ? isAI
-                          ? "border-purple-500 text-purple-600 bg-purple-50/60"
-                          : "border-orange-500 text-orange-600 bg-orange-50/50"
-                        : "border-transparent hover:bg-slate-50"
-                    }`}
-                    style={{ color: isActive ? undefined : "var(--text-secondary)" }}
-                  >
-                    <span className={isActive
-                      ? isAI ? "text-purple-500" : "text-orange-500"
-                      : "opacity-60"}>
-                      {tab.icon}
-                    </span>
-                    {tab.label}
-                    {isAI && (
-                      <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full"
-                            style={{ background: isActive ? "#EDE9FE" : "#F3F4F6", color: isActive ? "#7C3AED" : "#6B7280" }}>
-                        NEW
-                      </span>
-                    )}
-                  </button>
-                );
-              })}
-            </nav>
-          </div>
-        </div>
-
-        {/* ── Main Content ── */}
-        <main className="max-w-[1440px] mx-auto px-6 py-6">
-          <div className="animate-fadeInUp">
-            {activeTab === "tongquan" && <TabTongQuan />}
-            {activeTab === "phantich" && <TabPhanTich />}
-            {activeTab === "insights" && <TabAIInsights />}
-            {activeTab === "action"   && <TabActionTracker />}
-            {activeTab === "lichsu"   && <TabLichSu />}
-            {activeTab === "phuluc"   && <TabPhuLuc />}
-          </div>
-        </main>
-
-        {/* ── ROI Banner ── */}
-        <div className="max-w-[1440px] mx-auto px-6 pb-6">
-          <div className="rounded-xl p-4 flex items-center justify-between flex-wrap gap-4"
-               style={{ background: "linear-gradient(135deg, #FF520010 0%, #006FAD10 100%)", border: "1px solid #FF520020" }}>
-            <div>
-              <div className="text-[13px] font-bold" style={{ color: "var(--text-primary)" }}>
-                📊 Hiệu quả Tự động hóa Dashboard
+        {/* ── Main Layout (Sidebar + Content) ── */}
+        <div className="max-w-[1440px] mx-auto px-6 py-6 flex gap-6 items-start">
+          {/* Left Sidebar */}
+          <aside className="w-[280px] shrink-0 sticky top-[135px] flex flex-col gap-6 max-h-[calc(100vh-160px)] overflow-y-auto scrollbar-hide">
+            {/* Vertical Navigation Card */}
+            <div className="bg-white rounded-xl p-3 shadow-sm border border-slate-200/80 flex flex-col gap-1">
+              <div className="text-[10px] font-bold text-slate-400 px-3 uppercase tracking-wider mb-2">
+                Danh mục điều hướng
               </div>
-              <div className="text-[11px] mt-1" style={{ color: "var(--text-secondary)" }}>
-                So với quy trình phân tích EES thủ công truyền thống
+              <nav className="flex flex-col gap-1">
+                {TABS.map((tab) => {
+                  const isActive = activeTab === tab.id;
+                  const isAI = tab.id === "insights";
+                  return (
+                    <button
+                      key={tab.id}
+                      id={`tab-${tab.id}`}
+                      onClick={() => setActiveTab(tab.id)}
+                      className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-[13px] font-semibold transition-all duration-150 border-l-2 ${
+                        isActive
+                          ? isAI
+                            ? "border-purple-500 text-purple-600 bg-purple-50/60"
+                            : "border-orange-500 text-orange-600 bg-orange-50/50"
+                          : "border-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900"
+                      }`}
+                    >
+                      <div className="flex items-center gap-2.5">
+                        <span className={isActive
+                          ? isAI ? "text-purple-500" : "text-orange-500"
+                          : "text-slate-400"}>
+                          {tab.icon}
+                        </span>
+                        <span>{tab.label}</span>
+                      </div>
+                      {isAI && (
+                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${
+                          isActive ? "bg-purple-100 text-purple-600" : "bg-slate-100 text-slate-500"
+                        }`}>
+                          NEW
+                        </span>
+                      )}
+                    </button>
+                  );
+                })}
+              </nav>
+            </div>
+
+            {/* Embedded Chatbot Copilot Widget */}
+            <div className="shrink-0 rounded-xl overflow-hidden shadow-sm">
+              <ChatBotCopilot isEmbedded={true} />
+            </div>
+          </aside>
+
+          {/* Right Main Content Panel */}
+          <div className="flex-1 min-w-0 flex flex-col gap-6">
+            <main className="animate-fadeInUp">
+              {activeTab === "tongquan" && <TabTongQuan />}
+              {activeTab === "phantich" && <TabPhanTich />}
+              {activeTab === "insights" && <TabAIInsights />}
+              {activeTab === "action"   && <TabActionTracker />}
+              {activeTab === "lichsu"   && <TabLichSu />}
+              {activeTab === "phuluc"   && <TabPhuLuc />}
+            </main>
+
+            {/* ── ROI Banner ── */}
+            <div className="rounded-xl p-4 flex items-center justify-between flex-wrap gap-4"
+                 style={{ background: "linear-gradient(135deg, #FF520010 0%, #006FAD10 100%)", border: "1px solid #FF520020" }}>
+              <div>
+                <div className="text-[13px] font-bold" style={{ color: "var(--text-primary)" }}>
+                  📊 Hiệu quả Tự động hóa Dashboard
+                </div>
+                <div className="text-[11px] mt-1" style={{ color: "var(--text-secondary)" }}>
+                  So với quy trình phân tích EES thủ công truyền thống
+                </div>
+              </div>
+              <div className="flex gap-6 flex-wrap">
+                <div className="text-center">
+                  <div className="text-[18px] font-extrabold text-[#FF5200]">97%</div>
+                  <div className="text-[9px] text-slate-500 font-medium">Giảm thời gian</div>
+                  <div className="text-[9px] text-slate-400">3 phút vs 8 giờ</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[18px] font-extrabold text-[#006FAD]">60M₫</div>
+                  <div className="text-[9px] text-slate-500 font-medium">Tiết kiệm/năm</div>
+                  <div className="text-[9px] text-slate-400">0đ vs 5M/tháng</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[18px] font-extrabold text-[#16A34A]">100%</div>
+                  <div className="text-[9px] text-slate-500 font-medium">Độ chính xác</div>
+                  <div className="text-[9px] text-slate-400">Tự động, không sai sót</div>
+                </div>
+                <div className="text-center">
+                  <div className="text-[18px] font-extrabold text-[#7C3AED]">0 FTE</div>
+                  <div className="text-[9px] text-slate-500 font-medium">Nhân lực cần</div>
+                  <div className="text-[9px] text-slate-400">vs 2 người/tháng</div>
+                </div>
               </div>
             </div>
-            <div className="flex gap-6 flex-wrap">
-              <div className="text-center">
-                <div className="text-[18px] font-extrabold text-[#FF5200]">97%</div>
-                <div className="text-[9px] text-slate-500 font-medium">Giảm thời gian</div>
-                <div className="text-[9px] text-slate-400">3 phút vs 8 giờ</div>
-              </div>
-              <div className="text-center">
-                <div className="text-[18px] font-extrabold text-[#006FAD]">60M₫</div>
-                <div className="text-[9px] text-slate-500 font-medium">Tiết kiệm/năm</div>
-                <div className="text-[9px] text-slate-400">0đ vs 5M/tháng</div>
-              </div>
-              <div className="text-center">
-                <div className="text-[18px] font-extrabold text-[#16A34A]">100%</div>
-                <div className="text-[9px] text-slate-500 font-medium">Độ chính xác</div>
-                <div className="text-[9px] text-slate-400">Tự động, không sai sót</div>
-              </div>
-              <div className="text-center">
-                <div className="text-[18px] font-extrabold text-[#7C3AED]">0 FTE</div>
-                <div className="text-[9px] text-slate-500 font-medium">Nhân lực cần</div>
-                <div className="text-[9px] text-slate-400">vs 2 người/tháng</div>
-              </div>
-            </div>
+
+            {/* ── Footer ── */}
+            <footer className="py-4 bg-white rounded-xl border border-slate-200/80 px-6 flex items-center justify-between text-[11px] shadow-sm"
+                    style={{ color: "var(--text-muted)" }}>
+              <span>© 2026 GiaoHangNhanh · Bộ phận Nhân lực & EX · Bảo mật nội bộ</span>
+              <span>EES Dashboard v3.1 · Dữ liệu khảo sát Q1/2026 · 23,412 respondents</span>
+            </footer>
           </div>
         </div>
-
-        {/* ── Footer ── */}
-        <footer className="mt-2 py-4 bg-white" style={{ borderTop: "1px solid var(--ghn-border)" }}>
-          <div className="max-w-[1440px] mx-auto px-6 flex items-center justify-between text-[11px]"
-               style={{ color: "var(--text-muted)" }}>
-            <span>© 2026 GiaoHangNhanh · Bộ phận Nhân lực & EX · Bảo mật nội bộ</span>
-            <span>EES Dashboard v3.1 · Dữ liệu khảo sát Q1/2026 · 23,412 respondents</span>
-          </div>
-        </footer>
-
-        {/* ── Chatbot Copilot (Floating) ── */}
-        <ChatBotCopilot />
       </div>
     </DashboardProvider>
   );

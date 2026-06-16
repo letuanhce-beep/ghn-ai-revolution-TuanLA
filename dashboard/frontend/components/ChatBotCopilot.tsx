@@ -255,10 +255,16 @@ const SUGGESTED_QUESTIONS = [
   "Benchmark ngành?",
 ];
 
-export default function ChatBotCopilot() {
+export default function ChatBotCopilot({ isEmbedded = false }: { isEmbedded?: boolean }) {
   const { eesData } = useDashboard();
   const [actions, setActions] = useState<any[]>([]);
-  const [isOpen, setIsOpen] = useState(false);
+  const [isOpen, setIsOpen] = useState(isEmbedded);
+
+  useEffect(() => {
+    if (isEmbedded) {
+      setIsOpen(true);
+    }
+  }, [isEmbedded]);
 
   useEffect(() => {
     if (isOpen && typeof window !== "undefined") {
@@ -339,49 +345,55 @@ export default function ChatBotCopilot() {
   return (
     <>
       {/* Floating button */}
-      <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110"
-        style={{
-          background: "linear-gradient(135deg, #FF5200 0%, #006FAD 100%)",
-          boxShadow: "0 4px 20px rgba(255,82,0,0.4)",
-        }}
-        title="GHN Copilot"
-      >
-        {isOpen ? (
-          <X className="w-6 h-6 text-white" />
-        ) : (
-          <MessageCircle className="w-6 h-6 text-white" />
-        )}
-        {!isOpen && (
-          <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse" />
-        )}
-      </button>
+      {!isEmbedded && (
+        <button
+          onClick={() => setIsOpen(!isOpen)}
+          className="fixed bottom-6 right-6 z-50 w-14 h-14 rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110"
+          style={{
+            background: "linear-gradient(135deg, #FF5200 0%, #006FAD 100%)",
+            boxShadow: "0 4px 20px rgba(255,82,0,0.4)",
+          }}
+          title="GHN Copilot"
+        >
+          {isOpen ? (
+            <X className="w-6 h-6 text-white" />
+          ) : (
+            <MessageCircle className="w-6 h-6 text-white" />
+          )}
+          {!isOpen && (
+            <span className="absolute -top-1 -right-1 w-4 h-4 bg-green-500 rounded-full border-2 border-white animate-pulse" />
+          )}
+        </button>
+      )}
 
       {/* Chat panel */}
       {isOpen && (
         <div
-          className="fixed bottom-24 right-6 z-50 w-[380px] max-h-[560px] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-fadeInUp"
+          className={
+            isEmbedded
+              ? "w-full h-[320px] flex flex-col rounded-xl overflow-hidden border border-slate-700/30 shadow-sm"
+              : "fixed bottom-24 right-6 z-50 w-[380px] max-h-[560px] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-fadeInUp"
+          }
           style={{
             background: "#1C2331",
-            border: "1px solid rgba(255,255,255,0.1)",
+            border: isEmbedded ? undefined : "1px solid rgba(255,255,255,0.1)",
           }}
         >
           {/* Header */}
           <div
-            className="px-4 py-3 flex items-center gap-3 shrink-0"
+            className="px-3.5 py-2.5 flex items-center gap-2.5 shrink-0"
             style={{ background: "linear-gradient(135deg, #FF5200 0%, #006FAD 100%)" }}
           >
-            <div className="w-8 h-8 rounded-full bg-white/20 flex items-center justify-center">
-              <Bot className="w-5 h-5 text-white" />
+            <div className="w-6 h-6 rounded-full bg-white/20 flex items-center justify-center shrink-0">
+              <Bot className="w-4 h-4 text-white" />
             </div>
-            <div className="flex-1">
-              <div className="text-white text-[13px] font-bold">GHN Copilot</div>
-              <div className="text-white/70 text-[10px]">Trợ lý AI phân tích EES 2026</div>
+            <div className="flex-1 min-w-0">
+              <div className="text-white text-[12px] font-bold truncate">GHN Copilot</div>
+              <div className="text-white/60 text-[9px] truncate">Trợ lý AI phân tích EES</div>
             </div>
-            <div className="flex items-center gap-1.5">
-              <span className="w-2 h-2 rounded-full bg-green-400 animate-pulse" />
-              <span className="text-white/70 text-[10px]">Online</span>
+            <div className="flex items-center gap-1 shrink-0">
+              <span className="w-1.5 h-1.5 rounded-full bg-green-400 animate-pulse" />
+              <span className="text-white/60 text-[9px]">Online</span>
             </div>
           </div>
 
