@@ -62,8 +62,8 @@ export default function Dashboard() {
       <div className="min-h-screen" style={{ background: "var(--ghn-bg)" }}>
 
         {/* ── Header ── */}
-        <header className="bg-white sticky top-0 z-40"
-                style={{ borderBottom: "1px solid var(--ghn-border)", boxShadow: "0 1px 3px rgba(0,0,0,.06)" }}>
+        <header className="sticky top-0 z-40 bg-slate-950/75 backdrop-blur-md"
+                style={{ borderBottom: "1px solid rgba(255,255,255,0.08)", boxShadow: "0 4px 20px rgba(0,0,0,0.15)" }}>
           <div className="max-w-[1440px] mx-auto px-6 py-3">
             {/* Top row */}
             <div className="flex items-center justify-between mb-3">
@@ -71,15 +71,14 @@ export default function Dashboard() {
                 <GHNLogo />
                 <div>
                   <div className="flex items-baseline gap-2.5">
-                    <h1 className="text-[15px] font-extrabold tracking-tight"
-                        style={{ color: "var(--text-primary)" }}>
+                    <h1 className="text-[15px] font-extrabold tracking-tight text-white animate-pulse">
                       GHN EES 2026
                     </h1>
-                    <span className="text-[11px] font-medium" style={{ color: "var(--text-muted)" }}>
+                    <span className="text-[11px] font-semibold text-slate-400">
                       Employee Engagement Survey Dashboard
                     </span>
                   </div>
-                  <p className="text-[11px] mt-0.5" style={{ color: "var(--text-muted)" }}>
+                  <p className="text-[11px] mt-0.5 text-slate-500">
                     GiaoHangNhanh · 23,000+ nhân viên · Chu kỳ khảo sát Q1/2026
                   </p>
                 </div>
@@ -104,7 +103,7 @@ export default function Dashboard() {
                   🔒 NỘI BỘ
                 </span>
                 {/* About */}
-                <a href="/about" className="text-[11px] p-1.5 rounded-full hover:bg-slate-100 transition-colors" title="Thông tin">
+                <a href="/about" className="text-[11px] p-1.5 rounded-full hover:bg-slate-800 transition-colors" title="Thông tin">
                   <Info size={14} className="text-slate-400" />
                 </a>
               </div>
@@ -117,76 +116,81 @@ export default function Dashboard() {
 
         {/* ── Main Layout (Sidebar + Content) ── */}
         <div className="max-w-[1440px] mx-auto px-6 py-6 flex gap-6 items-start">
-          {/* Left Sidebar */}
-          <aside className="w-[280px] shrink-0 sticky top-[135px] flex flex-col gap-6 max-h-[calc(100vh-160px)] overflow-y-auto scrollbar-hide">
-            {/* Vertical Navigation Card */}
-            <div className="bg-white/90 backdrop-blur-md rounded-xl p-3 shadow-sm border border-slate-200/60 flex flex-col gap-1 transition-all duration-150">
-              <div className="text-[10px] font-bold text-slate-400 px-3 uppercase tracking-wider mb-2">
-                Danh mục điều hướng
+          {/* Left Sidebar Wrapper (Sticky & Relative for Popout Chatbot) */}
+          <div className="w-[280px] shrink-0 sticky top-[135px] relative">
+            <aside className="w-full flex flex-col gap-6 max-h-[calc(100vh-160px)] overflow-y-auto scrollbar-hide">
+              {/* Vertical Navigation Card (Gradient Xanh dương GHN) */}
+              <div className="bg-gradient-to-b from-[#006FAD] to-[#002D4B] rounded-[24px] p-4 shadow-xl border border-white/10 flex flex-col gap-1 transition-all duration-150">
+                <div className="text-[10px] font-extrabold text-white/50 px-3 uppercase tracking-wider mb-2">
+                  Danh mục điều hướng
+                </div>
+                <nav className="flex flex-col gap-1.5">
+                  {TABS.map((tab) => {
+                    const isActive = activeTab === tab.id;
+                    const isAI = tab.id === "insights";
+                    return (
+                      <button
+                        key={tab.id}
+                        id={`tab-${tab.id}`}
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`flex items-center justify-between px-3.5 py-3 rounded-xl text-[13px] font-semibold transition-all duration-150 border-l-4 ${
+                          isActive
+                            ? isAI
+                              ? "border-[#FF5200] text-purple-600 bg-white shadow-md font-bold"
+                              : "border-[#FF5200] text-[#006FAD] bg-white shadow-md font-bold"
+                            : "border-transparent text-white/70 hover:bg-white/10 hover:text-white"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2.5">
+                          <span className={isActive
+                            ? isAI ? "text-purple-500" : "text-[#FF5200]"
+                            : "text-white/60"}>
+                            {tab.icon}
+                          </span>
+                          <span>{tab.label}</span>
+                        </div>
+                        {isAI && (
+                          <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${
+                            isActive ? "bg-purple-100 text-purple-600" : "bg-white/15 text-white"
+                          }`}>
+                            NEW
+                          </span>
+                        )}
+                      </button>
+                    );
+                  })}
+                </nav>
               </div>
-              <nav className="flex flex-col gap-1">
-                {TABS.map((tab) => {
-                  const isActive = activeTab === tab.id;
-                  const isAI = tab.id === "insights";
-                  return (
-                    <button
-                      key={tab.id}
-                      id={`tab-${tab.id}`}
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-[13px] font-semibold transition-all duration-150 border-l-2 ${
-                        isActive
-                          ? isAI
-                            ? "border-purple-500 text-purple-600 bg-purple-50/70 shadow-[0_0_12px_rgba(168,85,247,0.12)] animate-pulse"
-                            : "border-orange-500 text-orange-600 bg-orange-50/60 shadow-[0_0_12px_rgba(255,82,0,0.12)]"
-                          : "border-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900"
-                      }`}
-                    >
-                      <div className="flex items-center gap-2.5">
-                        <span className={isActive
-                          ? isAI ? "text-purple-500" : "text-orange-500"
-                          : "text-slate-400"}>
-                          {tab.icon}
-                        </span>
-                        <span>{tab.label}</span>
-                      </div>
-                      {isAI && (
-                        <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded-full shrink-0 ${
-                          isActive ? "bg-purple-100 text-purple-600" : "bg-slate-100 text-slate-500"
-                        }`}>
-                          NEW
-                        </span>
-                      )}
-                    </button>
-                  );
-                })}
-              </nav>
-            </div>
 
-            {/* Collapsible Chatbot Widget */}
-            {isChatExpanded ? (
-              <div className="shrink-0 rounded-xl overflow-hidden shadow-lg animate-fadeInUp">
+              {/* Collapsed Chatbot Button (Sleek dark futuristic style inside sidebar) */}
+              {!isChatExpanded && (
+                <button
+                  onClick={() => setIsChatExpanded(true)}
+                  className="w-full bg-slate-950/90 text-white hover:bg-slate-900 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between transition-all duration-150 shadow-md group border-l-4 border-l-[#FF5200] hover:shadow-[0_0_15px_rgba(255,82,0,0.15)]"
+                >
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 relative">
+                      <Bot className="w-4.5 h-4.5 text-[#FF5200] group-hover:scale-110 transition-transform duration-150" />
+                      <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-green-500 animate-ping" />
+                      <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-green-500" />
+                    </div>
+                    <div className="text-left">
+                      <div className="text-[12px] font-extrabold tracking-tight">Trợ lý GHN Copilot</div>
+                      <div className="text-[9px] text-slate-400 font-medium">Click để chat AI</div>
+                    </div>
+                  </div>
+                  <Sparkles className="w-3.5 h-3.5 text-purple-400 animate-pulse" />
+                </button>
+              )}
+            </aside>
+
+            {/* Popout Chatbot Widget (Slides out to the right of the sidebar, not clipped by overflow) */}
+            {isChatExpanded && (
+              <div className="absolute left-[300px] bottom-0 z-50 w-[400px] h-[520px] rounded-2xl overflow-hidden shadow-2xl animate-fadeIn border border-slate-800/80">
                 <ChatBotCopilot isEmbedded={true} onClose={() => setIsChatExpanded(false)} />
               </div>
-            ) : (
-              <button
-                onClick={() => setIsChatExpanded(true)}
-                className="w-full bg-slate-950 text-white hover:bg-slate-900 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between transition-all duration-150 shadow-md group border-l-4 border-l-[#FF5200] hover:shadow-[0_0_15px_rgba(255,82,0,0.15)]"
-              >
-                <div className="flex items-center gap-2.5">
-                  <div className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 relative">
-                    <Bot className="w-4.5 h-4.5 text-[#FF5200] group-hover:scale-110 transition-transform duration-150" />
-                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-green-500 animate-ping" />
-                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-green-500" />
-                  </div>
-                  <div className="text-left">
-                    <div className="text-[12px] font-extrabold tracking-tight">Trợ lý GHN Copilot</div>
-                    <div className="text-[9px] text-slate-400 font-medium">Click để chat AI</div>
-                  </div>
-                </div>
-                <Sparkles className="w-3.5 h-3.5 text-purple-400 animate-pulse" />
-              </button>
             )}
-          </aside>
+          </div>
 
           {/* Right Main Content Panel */}
           <div className="flex-1 min-w-0 flex flex-col gap-6">

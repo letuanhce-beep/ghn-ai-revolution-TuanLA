@@ -11,7 +11,7 @@
   --ghn-orange-dark:  #D4541A;
   --ghn-navy:       #006FAD;
   --ghn-navy-light: #E8EEF5;
-  --ghn-bg:         #F4F6FA;
+  --ghn-bg:         linear-gradient(135deg, #091E3A 0%, #050A18 100%);
   --ghn-surface:    #FFFFFF;
   --ghn-border:     #E4E9F0;
 
@@ -23,10 +23,10 @@
   --red-negative:   #DC2626;
   --amber-warning:  #D97706;
 
-  --radius-card:  16px;
-  --radius-badge: 8px;
-  --shadow-card:  0 1px 3px rgba(0,0,0,.06), 0 4px 16px rgba(0,0,0,.04);
-  --shadow-hover: 0 4px 12px rgba(0,0,0,.10), 0 8px 24px rgba(0,0,0,.06);
+  --radius-card:  24px;
+  --radius-badge: 12px;
+  --shadow-card:  0 4px 20px rgba(0,0,0,.08);
+  --shadow-hover: 0 10px 30px rgba(0,0,0,.15);
 }
 
 /* ── Base Reset ── */

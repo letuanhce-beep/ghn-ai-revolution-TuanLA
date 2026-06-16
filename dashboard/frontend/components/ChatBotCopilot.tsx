@@ -377,7 +377,7 @@ export default function ChatBotCopilot({
         <div
           className={
             isEmbedded
-              ? "w-full h-[320px] flex flex-col rounded-xl overflow-hidden border shadow-lg"
+              ? "w-full h-full flex flex-col rounded-xl overflow-hidden border shadow-lg"
               : "fixed bottom-24 right-6 z-50 w-[380px] max-h-[560px] rounded-2xl shadow-2xl flex flex-col overflow-hidden animate-fadeInUp"
           }
           style={{
