@@ -75,81 +75,97 @@ function DashboardContent() {
 
   // Map email from NextAuth session to Role and Scope
   useEffect(() => {
-    if (status === "loading") {
-      setIsCheckingAuth(true);
-      return;
-    }
-
-    if (status === "unauthenticated") {
-      setIsCheckingAuth(false);
-      return;
-    }
-
-    if (session?.user?.email) {
-      const email = session.user.email.toLowerCase().trim();
-      
-      // 1. Check client-side dynamic whitelist (localStorage)
-      let savedWhitelist = [];
-      try {
-        const raw = localStorage.getItem("ghn-ees-email-whitelist-v2") || localStorage.getItem("ghn-ees-email-whitelist");
-        if (raw) {
-          savedWhitelist = JSON.parse(raw);
-        }
-      } catch (e) {}
-
-      // Fallback default list if empty
-      if (savedWhitelist.length === 0) {
-        savedWhitelist = [
-          { email: "tuanla@ghn.vn", role: "HR_EX", scope: "" },
-          { email: "admin.ees@ghn.vn", role: "KHOI_LEADER", scope: "" },
-          { email: "ex-executives@scommerce.asia", role: "KHOI_LEADER", scope: "" },
-          { email: "ops.leader@ghn.vn", role: "KHOI_LEADER", scope: "VH" }
-        ];
+    const verifyUser = async () => {
+      if (status === "loading") {
+        setIsCheckingAuth(true);
+        return;
       }
 
-      // Find matched item
-      const matched = savedWhitelist.find((item: any) => {
-        if (typeof item === "string") return item.toLowerCase() === email;
-        return item && item.email && item.email.toLowerCase() === email;
-      });
+      if (status === "unauthenticated") {
+        setIsCheckingAuth(false);
+        return;
+      }
 
-      if (matched) {
-        if (typeof matched === "object" && matched.role) {
-          // Map CEO or KHOI_LEADER to KHOI_LEADER
-          const resolvedRole = (matched.role === "CEO" || matched.role === "KHOI_LEADER") ? "KHOI_LEADER" : matched.role;
-          setUserRole(resolvedRole as any);
-          setUserScope(matched.scope || "");
+      if (session?.user?.email) {
+        const email = session.user.email.toLowerCase().trim();
+        let savedWhitelist = [];
+
+        try {
+          // Fetch whitelist from the server-side API (which reads from data/whitelist.json)
+          const response = await fetch("/api/whitelist");
+          if (response.ok) {
+            savedWhitelist = await response.json();
+          }
+        } catch (err) {
+          console.error("Failed to load whitelist from server in Dashboard", err);
+        }
+
+        // Fallback to localStorage if API request fails
+        if (savedWhitelist.length === 0) {
+          try {
+            const raw = localStorage.getItem("ghn-ees-email-whitelist-v2") || localStorage.getItem("ghn-ees-email-whitelist");
+            if (raw) {
+              savedWhitelist = JSON.parse(raw);
+            }
+          } catch (e) {}
+        }
+
+        // Fallback default list if empty
+        if (savedWhitelist.length === 0) {
+          savedWhitelist = [
+            { email: "tuanla@ghn.vn", role: "HR_EX", scope: "" },
+            { email: "admin.ees@ghn.vn", role: "HR_EX", scope: "" },
+            { email: "ex-executives@scommerce.asia", role: "HR_EX", scope: "" },
+            { email: "ceo.office@scommerce.asia", role: "KHOI_LEADER", scope: "" },
+            { email: "ops.leader@ghn.vn", role: "KHOI_LEADER", scope: "VH" }
+          ];
+        }
+
+        // Find matched item
+        const matched = savedWhitelist.find((item: any) => {
+          if (typeof item === "string") return item.toLowerCase() === email;
+          return item && item.email && item.email.toLowerCase() === email;
+        });
+
+        if (matched) {
+          if (typeof matched === "object" && matched.role) {
+            const resolvedRole = (matched.role === "CEO" || matched.role === "KHOI_LEADER") ? "KHOI_LEADER" : matched.role;
+            setUserRole(resolvedRole as any);
+            setUserScope(matched.scope || "");
+            setIsCheckingAuth(false);
+            return;
+          }
+        }
+
+        // Default hardcoded fallback mappings if not found in custom Whitelist
+        if (email === "tuanla@ghn.vn") {
+          setUserRole("HR_EX"); // Admin
+          setUserScope("");
           setIsCheckingAuth(false);
           return;
         }
-      }
+        
+        if (email === "admin.ees@ghn.vn" || email === "ex-executives@scommerce.asia") {
+          setUserRole("KHOI_LEADER"); // User
+          setUserScope("");
+          setIsCheckingAuth(false);
+          return;
+        }
+        
+        if (email === "ops.leader@ghn.vn") {
+          setUserRole("KHOI_LEADER"); // User
+          setUserScope("VH");
+          setIsCheckingAuth(false);
+          return;
+        }
 
-      // 2. Default hardcoded fallback mappings if not found in custom Whitelist
-      if (email === "tuanla@ghn.vn") {
-        setUserRole("HR_EX"); // Admin
-        setUserScope("");
-        setIsCheckingAuth(false);
-        return;
+        // Reject login if not in Whitelist and not fallback master
+        // Do not set isCheckingAuth(false) so they remain on loading screen during redirect
+        signOut({ callbackUrl: "/login?error=NotAuthorized" });
       }
-      
-      if (email === "admin.ees@ghn.vn" || email === "ex-executives@scommerce.asia") {
-        setUserRole("KHOI_LEADER"); // User
-        setUserScope("");
-        setIsCheckingAuth(false);
-        return;
-      }
-      
-      if (email === "ops.leader@ghn.vn") {
-        setUserRole("KHOI_LEADER"); // User
-        setUserScope("VH");
-        setIsCheckingAuth(false);
-        return;
-      }
+    };
 
-      // 3. Reject login if not in Whitelist and not fallback master
-      // Do not set isCheckingAuth(false) so they remain on loading screen during redirect
-      signOut({ callbackUrl: "/login?error=NotAuthorized" });
-    }
+    verifyUser();
   }, [session, status]);
 
   // Synchronize division filter automatically when role is KHOI_LEADER and scope is set

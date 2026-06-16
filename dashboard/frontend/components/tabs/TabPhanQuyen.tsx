@@ -32,35 +32,32 @@ export default function TabPhanQuyen({ userRole = "HR_EX" }: { userRole?: string
 
   // Load whitelist on mount
   useEffect(() => {
-    const loadWhitelist = () => {
+    const fetchWhitelist = async () => {
+      try {
+        const response = await fetch("/api/whitelist");
+        if (response.ok) {
+          const data = await response.json();
+          setWhitelist(data);
+          localStorage.setItem("ghn-ees-email-whitelist-v2", JSON.stringify(data));
+          localStorage.setItem("ghn-ees-email-whitelist", JSON.stringify(data));
+          return;
+        }
+      } catch (err) {
+        console.error("Failed to fetch whitelist from server", err);
+      }
+      
+      // Fallback to localStorage if offline
       try {
         const raw = localStorage.getItem("ghn-ees-email-whitelist-v2");
         if (raw) {
-          const parsed = JSON.parse(raw);
-          if (Array.isArray(parsed) && parsed.length > 0) {
-            setWhitelist(parsed);
-            return;
-          }
+          setWhitelist(JSON.parse(raw));
         }
-        
-        // Fallback or default values
-        const defaultList = [
-          { email: "tuanla@ghn.vn", role: "HR_EX", scope: "" },
-          { email: "admin.ees@ghn.vn", role: "HR_EX", scope: "" },
-          { email: "ex-executives@scommerce.asia", role: "HR_EX", scope: "" },
-          { email: "ceo.office@scommerce.asia", role: "KHOI_LEADER", scope: "" },
-          { email: "ops.leader@ghn.vn", role: "KHOI_LEADER", scope: "VH" },
-        ];
-        setWhitelist(defaultList as WhitelistItem[]);
-        localStorage.setItem("ghn-ees-email-whitelist-v2", JSON.stringify(defaultList));
-      } catch (err) {
-        console.error("Failed to load whitelist", err);
-      }
+      } catch {}
     };
-    loadWhitelist();
+    fetchWhitelist();
   }, []);
 
-  const handleAdd = () => {
+  const handleAdd = async () => {
     setError("");
     const email = newEmail.trim().toLowerCase();
     if (!email) return;
@@ -87,18 +84,46 @@ export default function TabPhanQuyen({ userRole = "HR_EX" }: { userRole?: string
       scope: newRole === "KHOI_LEADER" ? newScope : "",
     };
 
-    const newList = [...whitelist, newItem];
-    setWhitelist(newList);
-    localStorage.setItem("ghn-ees-email-whitelist-v2", JSON.stringify(newList));
-    localStorage.setItem("ghn-ees-email-whitelist", JSON.stringify(newList));
-    setNewEmail("");
+    try {
+      const response = await fetch("/api/whitelist", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(newItem),
+      });
+
+      if (!response.ok) {
+        const errJson = await response.json();
+        throw new Error(errJson.error || "Lỗi thêm email");
+      }
+
+      const resData = await response.json();
+      setWhitelist(resData.list);
+      localStorage.setItem("ghn-ees-email-whitelist-v2", JSON.stringify(resData.list));
+      localStorage.setItem("ghn-ees-email-whitelist", JSON.stringify(resData.list));
+      setNewEmail("");
+    } catch (err: any) {
+      setError(err.message || "Không thể kết nối đến máy chủ.");
+    }
   };
 
-  const handleDelete = (email: string) => {
-    const newList = whitelist.filter((item) => item.email !== email);
-    setWhitelist(newList);
-    localStorage.setItem("ghn-ees-email-whitelist-v2", JSON.stringify(newList));
-    localStorage.setItem("ghn-ees-email-whitelist", JSON.stringify(newList));
+  const handleDelete = async (email: string) => {
+    try {
+      const response = await fetch(`/api/whitelist?email=${encodeURIComponent(email)}`, {
+        method: "DELETE",
+      });
+
+      if (!response.ok) {
+        const errJson = await response.json();
+        throw new Error(errJson.error || "Lỗi xóa email");
+      }
+
+      const resData = await response.json();
+      setWhitelist(resData.list);
+      localStorage.setItem("ghn-ees-email-whitelist-v2", JSON.stringify(resData.list));
+      localStorage.setItem("ghn-ees-email-whitelist", JSON.stringify(resData.list));
+    } catch (err: any) {
+      setError(err.message || "Không thể kết nối đến máy chủ.");
+    }
   };
 
   // Safe Guard check for Admin Role
