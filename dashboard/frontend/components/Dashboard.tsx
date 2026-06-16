@@ -89,25 +89,38 @@ function DashboardContent() {
       if (session?.user?.email) {
         const email = session.user.email.toLowerCase().trim();
         let savedWhitelist = [];
+        let isPersistent = false;
 
         try {
           // Fetch whitelist from the server-side API (which reads from data/whitelist.json)
           const response = await fetch("/api/whitelist");
           if (response.ok) {
-            savedWhitelist = await response.json();
+            const resData = await response.json();
+            if (Array.isArray(resData)) {
+              savedWhitelist = resData;
+            } else {
+              savedWhitelist = resData.list || [];
+              isPersistent = resData.isPersistent || false;
+            }
           }
         } catch (err) {
           console.error("Failed to load whitelist from server in Dashboard", err);
         }
 
-        // Fallback to localStorage if API request fails
-        if (savedWhitelist.length === 0) {
-          try {
-            const raw = localStorage.getItem("ghn-ees-email-whitelist-v2") || localStorage.getItem("ghn-ees-email-whitelist");
-            if (raw) {
-              savedWhitelist = JSON.parse(raw);
-            }
-          } catch (e) {}
+        // Check localStorage if not persistent or server request failed
+        let localWhitelist = [];
+        try {
+          const raw = localStorage.getItem("ghn-ees-email-whitelist-v2") || localStorage.getItem("ghn-ees-email-whitelist");
+          if (raw) {
+            localWhitelist = JSON.parse(raw);
+          }
+        } catch (e) {}
+
+        // If server is not persistent and we have localWhitelist, use localWhitelist as it has our client-side edits
+        if (!isPersistent && localWhitelist.length > 0) {
+          savedWhitelist = localWhitelist;
+        } else if (savedWhitelist.length === 0 && localWhitelist.length > 0) {
+          savedWhitelist = localWhitelist;
         }
 
         // Fallback default list if empty
@@ -118,7 +131,7 @@ function DashboardContent() {
             { email: "ex-executives@scommerce.asia", role: "HR_EX", scope: "" },
             { email: "ceo.office@scommerce.asia", role: "KHOI_LEADER", scope: "" },
             { email: "ops.leader@ghn.vn", role: "KHOI_LEADER", scope: "VH" },
-            { email: "hongnx@ghn.vn", role: "HR_EX", scope: "" }
+            { email: "hongnx@ghn.vn", role: "KHOI_LEADER", scope: "" }
           ];
         }
 
@@ -139,14 +152,14 @@ function DashboardContent() {
         }
 
         // Default hardcoded fallback mappings if not found in custom Whitelist
-        if (email === "tuanla@ghn.vn" || email === "hongnx@ghn.vn") {
+        if (email === "tuanla@ghn.vn") {
           setUserRole("HR_EX"); // Admin
           setUserScope("");
           setIsCheckingAuth(false);
           return;
         }
         
-        if (email === "admin.ees@ghn.vn" || email === "ex-executives@scommerce.asia") {
+        if (email === "hongnx@ghn.vn" || email === "admin.ees@ghn.vn" || email === "ex-executives@scommerce.asia") {
           setUserRole("KHOI_LEADER"); // User
           setUserScope("");
           setIsCheckingAuth(false);

@@ -36,10 +36,31 @@ export default function TabPhanQuyen({ userRole = "HR_EX" }: { userRole?: string
       try {
         const response = await fetch("/api/whitelist");
         if (response.ok) {
-          const data = await response.json();
-          setWhitelist(data);
-          localStorage.setItem("ghn-ees-email-whitelist-v2", JSON.stringify(data));
-          localStorage.setItem("ghn-ees-email-whitelist", JSON.stringify(data));
+          const resData = await response.json();
+          let serverList = [];
+          let isPersistent = false;
+          if (Array.isArray(resData)) {
+            serverList = resData;
+          } else {
+            serverList = resData.list || [];
+            isPersistent = resData.isPersistent || false;
+          }
+
+          // If server is not persistent, prioritize localStorage
+          try {
+            const raw = localStorage.getItem("ghn-ees-email-whitelist-v2") || localStorage.getItem("ghn-ees-email-whitelist");
+            if (!isPersistent && raw) {
+              const localList = JSON.parse(raw);
+              if (localList.length > 0) {
+                setWhitelist(localList);
+                return;
+              }
+            }
+          } catch (e) {}
+
+          setWhitelist(serverList);
+          localStorage.setItem("ghn-ees-email-whitelist-v2", JSON.stringify(serverList));
+          localStorage.setItem("ghn-ees-email-whitelist", JSON.stringify(serverList));
           return;
         }
       } catch (err) {
@@ -48,7 +69,7 @@ export default function TabPhanQuyen({ userRole = "HR_EX" }: { userRole?: string
       
       // Fallback to localStorage if offline
       try {
-        const raw = localStorage.getItem("ghn-ees-email-whitelist-v2");
+        const raw = localStorage.getItem("ghn-ees-email-whitelist-v2") || localStorage.getItem("ghn-ees-email-whitelist");
         if (raw) {
           setWhitelist(JSON.parse(raw));
         }
@@ -97,9 +118,19 @@ export default function TabPhanQuyen({ userRole = "HR_EX" }: { userRole?: string
       }
 
       const resData = await response.json();
-      setWhitelist(resData.list);
-      localStorage.setItem("ghn-ees-email-whitelist-v2", JSON.stringify(resData.list));
-      localStorage.setItem("ghn-ees-email-whitelist", JSON.stringify(resData.list));
+      const isPersistent = resData.isPersistent || false;
+      let updatedList = [];
+
+      if (!isPersistent) {
+        const exists = whitelist.some((item) => item.email.toLowerCase() === newItem.email.toLowerCase());
+        updatedList = exists ? whitelist : [...whitelist, newItem];
+      } else {
+        updatedList = resData.list || [];
+      }
+
+      setWhitelist(updatedList);
+      localStorage.setItem("ghn-ees-email-whitelist-v2", JSON.stringify(updatedList));
+      localStorage.setItem("ghn-ees-email-whitelist", JSON.stringify(updatedList));
       setNewEmail("");
     } catch (err: any) {
       setError(err.message || "Không thể kết nối đến máy chủ.");
@@ -118,9 +149,18 @@ export default function TabPhanQuyen({ userRole = "HR_EX" }: { userRole?: string
       }
 
       const resData = await response.json();
-      setWhitelist(resData.list);
-      localStorage.setItem("ghn-ees-email-whitelist-v2", JSON.stringify(resData.list));
-      localStorage.setItem("ghn-ees-email-whitelist", JSON.stringify(resData.list));
+      const isPersistent = resData.isPersistent || false;
+      let updatedList = [];
+
+      if (!isPersistent) {
+        updatedList = whitelist.filter((item) => item.email.toLowerCase() !== email.toLowerCase());
+      } else {
+        updatedList = resData.list || [];
+      }
+
+      setWhitelist(updatedList);
+      localStorage.setItem("ghn-ees-email-whitelist-v2", JSON.stringify(updatedList));
+      localStorage.setItem("ghn-ees-email-whitelist", JSON.stringify(updatedList));
     } catch (err: any) {
       setError(err.message || "Không thể kết nối đến máy chủ.");
     }

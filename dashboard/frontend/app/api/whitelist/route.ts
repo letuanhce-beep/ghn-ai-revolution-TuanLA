@@ -3,7 +3,8 @@ import { getWhitelistFromServer, saveWhitelistToServer } from "@/lib/whitelistDb
 
 export async function GET() {
   const list = await getWhitelistFromServer();
-  return NextResponse.json(list);
+  const isPersistent = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+  return NextResponse.json({ list, isPersistent });
 }
 
 export async function POST(request: Request) {
@@ -27,7 +28,8 @@ export async function POST(request: Request) {
     }];
 
     await saveWhitelistToServer(newList);
-    return NextResponse.json({ success: true, list: newList });
+    const isPersistent = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+    return NextResponse.json({ success: true, list: newList, isPersistent });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to add email" }, { status: 500 });
   }
@@ -50,7 +52,8 @@ export async function DELETE(request: Request) {
     const newList = list.filter((i: any) => i.email.toLowerCase() !== emailClean);
 
     await saveWhitelistToServer(newList);
-    return NextResponse.json({ success: true, list: newList });
+    const isPersistent = !!(process.env.KV_REST_API_URL && process.env.KV_REST_API_TOKEN);
+    return NextResponse.json({ success: true, list: newList, isPersistent });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || "Failed to delete email" }, { status: 500 });
   }
