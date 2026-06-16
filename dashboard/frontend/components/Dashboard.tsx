@@ -183,11 +183,12 @@ function DashboardContent() {
               {/* User profile & Sign Out */}
               {session?.user && (
                 <div className="flex items-center gap-2 border-r border-slate-200 pr-2 mr-1">
-                  <div className="flex flex-col text-right hidden md:block">
-                    <span className="text-[11px] font-extrabold text-slate-700 leading-tight">
+                  <div className="hidden md:flex items-center gap-1.5 mr-1 text-[11px] font-semibold">
+                    <span className="font-extrabold text-slate-700">
                       {session.user.name || session.user.email?.split("@")[0].toUpperCase()}
                     </span>
-                    <span className="text-[9px] text-slate-400 font-semibold leading-tight">
+                    <span className="text-slate-400">-</span>
+                    <span className="text-slate-400 font-medium">
                       {session.user.email}
                     </span>
                   </div>
