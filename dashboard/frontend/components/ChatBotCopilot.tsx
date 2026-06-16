@@ -258,9 +258,11 @@ const SUGGESTED_QUESTIONS = [
 export default function ChatBotCopilot({
   isEmbedded = false,
   onClose,
+  onCommand,
 }: {
   isEmbedded?: boolean;
   onClose?: () => void;
+  onCommand?: (type: string, payload: any) => void;
 }) {
   const { eesData } = useDashboard();
   const [actions, setActions] = useState<any[]>([]);
@@ -312,9 +314,48 @@ export default function ChatBotCopilot({
     if (isOpen) inputRef.current?.focus();
   }, [isOpen]);
 
+  const parseConversationalCommand = useCallback((query: string) => {
+    if (!onCommand) return;
+    const q = query.toLowerCase().trim();
+
+    // Tab switching commands
+    if (q.includes("thực thi") || q.includes("hành động") || q.includes("action") || q.includes("kế hoạch")) {
+      onCommand("switch_tab", "action");
+    } else if (q.includes("insights") || q.includes("khuyến nghị") || q.includes("5-why") || q.includes("5 why") || q.includes("nguyên nhân")) {
+      onCommand("switch_tab", "insights");
+    } else if (q.includes("phân tích") || q.includes("biểu đồ") || q.includes("chi tiết")) {
+      onCommand("switch_tab", "phantich");
+    } else if (q.includes("tổng quan") || q.includes("chỉ số") || q.includes("kpi")) {
+      onCommand("switch_tab", "tongquan");
+    } else if (q.includes("lịch sử") || q.includes("xu hướng") || q.includes("so sánh")) {
+      onCommand("switch_tab", "lichsu");
+    } else if (q.includes("phụ lục") || q.includes("tài liệu") || q.includes("kiến trúc")) {
+      onCommand("switch_tab", "phuluc");
+    }
+
+    // Filter commands
+    if (q.includes("vận hành")) {
+      onCommand("filter_khoi", "khoivanhanh");
+    } else if (q.includes("công nghệ") || q.includes("tech")) {
+      onCommand("filter_khoi", "khoitech");
+    } else if (q.includes("thị trường") || q.includes("sales")) {
+      onCommand("filter_khoi", "khoithitruong");
+    } else if (q.includes("nhân lực") || q.includes("nhân sự") || q.includes("hr")) {
+      onCommand("filter_khoi", "khoinhanluc");
+    } else if (q.includes("tài chính")) {
+      onCommand("filter_khoi", "khoitaichinh");
+    } else if (q.includes("khách hàng")) {
+      onCommand("filter_khoi", "khoikhachhang");
+    } else if (q.includes("tất cả") || q.includes("reset") || q.includes("bỏ lọc") || q.includes("mặc định")) {
+      onCommand("reset_filters", null);
+    }
+  }, [onCommand]);
+
   const handleSend = useCallback(() => {
     const trimmed = input.trim();
     if (!trimmed || isTyping) return;
+
+    parseConversationalCommand(trimmed);
 
     const userMsg: Message = { role: "user", content: trimmed, timestamp: new Date() };
     setMessages(prev => [...prev, userMsg]);
@@ -329,10 +370,11 @@ export default function ChatBotCopilot({
       setMessages(prev => [...prev, botMsg]);
       setIsTyping(false);
     }, delay);
-  }, [input, isTyping, eesData, actions]);
+  }, [input, isTyping, eesData, actions, parseConversationalCommand]);
 
   const handleSuggestedClick = useCallback((question: string) => {
     setInput(question);
+    parseConversationalCommand(question);
     setTimeout(() => {
       const userMsg: Message = { role: "user", content: question, timestamp: new Date() };
       setMessages(prev => [...prev, userMsg]);

@@ -4,7 +4,7 @@ import { useDashboard } from "@/context/DashboardContext";
 import { KHOI, NHOM_NV, PHONG_BAN, YEARS } from "@/lib/mockData";
 import { RefreshCcw } from "lucide-react";
 
-export default function GlobalFilters() {
+export default function GlobalFilters({ userRole = "HR_EX", userScope = "" }: { userRole?: "HR_EX" | "KHOI_LEADER"; userScope?: string }) {
   const { filters, setFilter, resetFilters } = useDashboard();
 
   const phongBanOptions = filters.khoi ? PHONG_BAN[filters.khoi] ?? [] : [];
@@ -37,7 +37,8 @@ export default function GlobalFilters() {
         <select
           value={filters.khoi}
           onChange={(e) => setFilter("khoi", e.target.value)}
-          className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 transition"
+          disabled={userRole === "KHOI_LEADER" && !!userScope}
+          className="h-9 rounded-lg border border-slate-200 bg-white px-3 text-sm font-medium text-slate-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-orange-400 transition disabled:opacity-70 disabled:cursor-not-allowed"
         >
           <option value="">Tất cả Khối</option>
           {KHOI.map((k) => (

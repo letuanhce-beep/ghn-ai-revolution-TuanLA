@@ -3,11 +3,56 @@
 import { signIn } from "next-auth/react";
 import { useSearchParams } from "next/navigation";
 import { Shield } from "lucide-react";
-import { Suspense } from "react";
+import { Suspense, useState } from "react";
 
 function LoginContent() {
   const searchParams = useSearchParams();
   const error = searchParams?.get("error");
+  const [localError, setLocalError] = useState("");
+
+  const verifyEmailAndSignIn = (email: string) => {
+    setLocalError("");
+    const targetEmail = email.trim().toLowerCase();
+    
+    // 1. Get whitelist from localStorage
+    let savedWhitelist = [];
+    try {
+      const raw = localStorage.getItem("ghn-ees-email-whitelist-v2") || localStorage.getItem("ghn-ees-email-whitelist");
+      if (raw) {
+        savedWhitelist = JSON.parse(raw);
+      }
+    } catch {}
+
+    // Fallback default list if empty
+    if (savedWhitelist.length === 0) {
+      savedWhitelist = [
+        { email: "tuanla@ghn.vn", role: "HR_EX", scope: "" },
+        { email: "admin.ees@ghn.vn", role: "KHOI_LEADER", scope: "" },
+        { email: "ex-executives@scommerce.asia", role: "KHOI_LEADER", scope: "" },
+        { email: "ops.leader@ghn.vn", role: "KHOI_LEADER", scope: "VH" }
+      ];
+    }
+
+    // 2. Check if email is whitelisted
+    const matched = savedWhitelist.some((item: any) => {
+      if (typeof item === "string") return item.toLowerCase() === targetEmail;
+      return item && item.email && item.email.toLowerCase() === targetEmail;
+    });
+
+    // Hardcoded master fallbacks
+    const isMasterFallback = 
+      targetEmail === "tuanla@ghn.vn" || 
+      targetEmail === "admin.ees@ghn.vn" || 
+      targetEmail === "ops.leader@ghn.vn";
+
+    if (!matched && !isMasterFallback) {
+      setLocalError("Email này chưa được phân quyền để vào báo cáo. Vui lòng liên hệ Admin (tuanla@ghn.vn).");
+      return;
+    }
+
+    // 3. Trigger sign in
+    signIn("credentials", { email: targetEmail, callbackUrl: "/" });
+  };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#111621] p-6">
@@ -25,14 +70,14 @@ function LoginContent() {
 
         {/* Description */}
         <p className="text-[15px] text-slate-400 mb-8 leading-relaxed px-4">
-          Để đảm bảo tính bảo mật, Bạn vui lòng đăng nhập bằng tài khoản email <strong className="text-[#FF5200] font-bold">@ghn.vn</strong> hoặc <strong className="text-[#006FAD] font-bold">@scommerce.asia</strong> để xem dữ liệu. Cảm ơn Bạn!
+          Để đảm bảo tính bảo mật, Bạn vui lòng đăng nhập bằng tài khoản email <strong className="text-[#FF5200] font-bold">@ghn.vn</strong> hoặc <strong className="text-[#006FAD] font-bold">@scommerce.asia</strong> đã được cấp quyền để xem dữ liệu. Cảm ơn Bạn!
         </p>
 
         {/* Error Message */}
-        {error === "AccessDenied" && (
-          <div className="w-full mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg">
-            <p className="text-red-400 text-sm font-medium">
-              Tài khoản của bạn chưa được cấp quyền xem dữ liệu này. Vui lòng liên hệ Quản trị viên.
+        {(error === "AccessDenied" || error === "NotAuthorized" || localError) && (
+          <div className="w-full mb-6 p-3 bg-red-500/10 border border-red-500/20 rounded-lg text-left">
+            <p className="text-red-400 text-xs font-semibold leading-relaxed">
+              {localError || "Tài khoản của bạn chưa được cấp quyền xem dữ liệu báo cáo EES này. Vui lòng liên hệ Quản trị viên (tuanla@ghn.vn) để được phân quyền."}
             </p>
           </div>
         )}
@@ -40,28 +85,95 @@ function LoginContent() {
         {/* Google Sign In Button */}
         <button
           onClick={() => signIn("google", { callbackUrl: "/" })}
-          className="w-full bg-white hover:bg-slate-50 text-slate-700 font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors duration-200"
+          className="w-full bg-white hover:bg-slate-50 text-slate-700 font-semibold py-3 px-4 rounded-xl flex items-center justify-center gap-3 transition-colors duration-200 shadow-sm"
         >
           <svg className="w-5 h-5" viewBox="0 0 24 24">
-            <path
-              d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"
-              fill="#4285F4"
-            />
-            <path
-              d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"
-              fill="#34A853"
-            />
-            <path
-              d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"
-              fill="#FBBC05"
-            />
-            <path
-              d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"
-              fill="#EA4335"
-            />
+            <path d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z" fill="#4285F4" />
+            <path d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z" fill="#34A853" />
+            <path d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z" fill="#FBBC05" />
+            <path d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z" fill="#EA4335" />
           </svg>
           Sign in with Google
         </button>
+
+        {/* ── Demo Accounts / Quick Testing ── */}
+        <div className="w-full mt-8 pt-6 border-t border-slate-700/40 text-left">
+          <p className="text-[11px] font-extrabold text-[#006FAD] uppercase tracking-wider text-center mb-3.5">
+            🔑 Kiểm thử phân quyền (Demo)
+          </p>
+          
+          <div className="flex flex-col gap-2.5">
+            {/* ADMIN */}
+            <button
+              onClick={() => verifyEmailAndSignIn("tuanla@ghn.vn")}
+              className="w-full bg-[#1e2738] hover:bg-[#253046] text-slate-200 font-semibold py-2.5 px-3.5 rounded-xl flex justify-between items-center transition-all border border-slate-700/30 hover:border-[#FF5200]/40 group"
+            >
+              <div className="flex flex-col text-left">
+                <span className="text-xs text-white font-bold">tuanla@ghn.vn</span>
+                <span className="text-[9px] text-[#FF5200] font-bold">Quyền ADMIN (Quản trị Whitelist)</span>
+              </div>
+              <span className="text-[9px] font-extrabold bg-[#FF5200]/15 text-[#FF5200] border border-[#FF5200]/30 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                ADMIN
+              </span>
+            </button>
+
+            {/* USER - ALL */}
+            <button
+              onClick={() => verifyEmailAndSignIn("admin.ees@ghn.vn")}
+              className="w-full bg-[#1e2738] hover:bg-[#253046] text-slate-200 font-semibold py-2.5 px-3.5 rounded-xl flex justify-between items-center transition-all border border-slate-700/30 hover:border-[#006FAD]/40 group"
+            >
+              <div className="flex flex-col text-left">
+                <span className="text-xs text-white">admin.ees@ghn.vn</span>
+                <span className="text-[9px] text-slate-400 font-medium">Quyền USER (Xem tất cả các Khối)</span>
+              </div>
+              <span className="text-[9px] font-extrabold bg-blue-500/10 text-blue-400 border border-blue-500/20 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                USER
+              </span>
+            </button>
+
+            {/* USER - SCOPE VH */}
+            <button
+              onClick={() => verifyEmailAndSignIn("ops.leader@ghn.vn")}
+              className="w-full bg-[#1e2738] hover:bg-[#253046] text-slate-200 font-semibold py-2.5 px-3.5 rounded-xl flex justify-between items-center transition-all border border-slate-700/30 hover:border-green-500/40 group"
+            >
+              <div className="flex flex-col text-left">
+                <span className="text-xs text-white">ops.leader@ghn.vn</span>
+                <span className="text-[9px] text-slate-400 font-medium">Quyền USER (Khóa cứng Khối Vận Hành)</span>
+              </div>
+              <span className="text-[9px] font-extrabold bg-green-500/10 text-green-400 border border-green-500/20 px-2.5 py-0.5 rounded-full uppercase tracking-wider">
+                USER
+              </span>
+            </button>
+          </div>
+
+          {/* Quick email textbox */}
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              const form = e.currentTarget;
+              const input = form.elements.namedItem("demoEmail") as HTMLInputElement;
+              const email = input.value.trim();
+              if (email) {
+                verifyEmailAndSignIn(email);
+              }
+            }}
+            className="mt-4 flex gap-2"
+          >
+            <input
+              name="demoEmail"
+              type="text"
+              required
+              placeholder="Hoặc nhập email..."
+              className="flex-1 bg-[#151b27] text-white text-xs px-3 py-2.5 rounded-xl border border-slate-700/60 focus:border-[#006FAD] focus:outline-none transition-colors placeholder:text-slate-500"
+            />
+            <button
+              type="submit"
+              className="bg-[#006FAD] hover:bg-[#006FAD]/90 text-white text-xs px-3.5 py-2.5 rounded-xl font-bold transition-all shrink-0 shadow-md"
+            >
+              Đăng nhập
+            </button>
+          </form>
+        </div>
 
       </div>
     </div>

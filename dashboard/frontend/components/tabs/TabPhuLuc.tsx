@@ -6,6 +6,7 @@ import {
   PILLARS,
   demographicSeniority,
   demographicGeneration,
+  KHOI,
 } from "@/lib/mockData";
 import { PieChart, Pie, Cell, Tooltip, Legend, ResponsiveContainer } from "recharts";
 import {
@@ -24,6 +25,9 @@ import {
   Lock,
   Mail,
   Globe,
+  Plus,
+  Trash2,
+  AlertCircle,
 } from "lucide-react";
 
 // ── Accordion Item ────────────────────────────────────────────
@@ -186,7 +190,7 @@ function GlossaryItem({ term, formula, description }: {
 
 // ── Main Tab ──────────────────────────────────────────────────
 
-export default function TabPhuLuc() {
+export default function TabPhuLuc({ userRole = "HR_EX" }: { userRole?: "HR_EX" | "KHOI_LEADER" }) {
   return (
     <div className="space-y-4">
       {/* Framework */}
@@ -391,27 +395,27 @@ export default function TabPhuLuc() {
         </div>
 
         {/* ── Security ── */}
-        <div className="mt-6 bg-slate-50 border border-slate-200 rounded-xl p-4">
+        <div className="mt-6 bg-slate-50 border border-slate-200 rounded-[20px] p-5">
           <h4 className="text-xs font-bold text-slate-700 uppercase tracking-wide mb-3 flex items-center gap-2">
             <ShieldCheck size={14} className="text-green-600" />
-            Bảo mật
+            Bảo mật & Phân quyền Ủy quyền
           </h4>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
-            <div className="flex items-start gap-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-5">
+            <div className="flex items-start gap-2 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
               <Lock size={14} className="text-[#FF5200] mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-xs font-bold text-slate-700">Google SSO</p>
                 <p className="text-[10px] text-slate-500">Xác thực qua Google OAuth 2.0</p>
               </div>
             </div>
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-2 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
               <Mail size={14} className="text-[#006FAD] mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-xs font-bold text-slate-700">Email Whitelist</p>
-                <p className="text-[10px] text-slate-500">Chỉ email được phê duyệt mới truy cập</p>
+                <p className="text-[10px] text-slate-500">Giới hạn truy cập cho danh sách được chọn</p>
               </div>
             </div>
-            <div className="flex items-start gap-2">
+            <div className="flex items-start gap-2 bg-white p-3 rounded-xl border border-slate-100 shadow-sm">
               <Globe size={14} className="text-green-600 mt-0.5 flex-shrink-0" />
               <div>
                 <p className="text-xs font-bold text-slate-700">Domain Restriction</p>
@@ -424,3 +428,4 @@ export default function TabPhuLuc() {
     </div>
   );
 }
+

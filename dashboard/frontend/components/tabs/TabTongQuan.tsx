@@ -8,7 +8,7 @@ import {
 } from "recharts";
 import {
   TrendingUp, TrendingDown, Users, AlertTriangle,
-  CheckCircle2, Activity, Star, Flame, ArrowUpRight, ArrowDownRight, Minus,
+  CheckCircle2, Activity, Star, Flame, ArrowUpRight, ArrowDownRight, Minus, Sparkles,
 } from "lucide-react";
 
 // ── Gauge Component ───────────────────────────────────────────
@@ -205,10 +205,13 @@ function ZoneCard({ zone, type }: { zone: ZoneData; type: "risk" | "excellence" 
 const GHN_ORANGE = "#FF5200";
 const GHN_NAVY   = "#006FAD";
 
-export default function TabTongQuan() {
+export default function TabTongQuan({ userRole = "HR_EX", userScope = "" }: { userRole?: "HR_EX" | "KHOI_LEADER"; userScope?: string }) {
   const { filters, eesData } = useDashboard();
   const { kpiData, groupEngagement, divisionData, riskZones, excellenceZones } = eesData;
   
+  const isLeader = userRole === "KHOI_LEADER";
+  const activeKhoiFilter = isLeader ? (userScope || "VH") : filters.khoi;
+
   const getKpiForYear = (y: number) => kpiData.find((d) => d.year === y);
 
   const curKpi  = getKpiForYear(filters.year) || kpiData[0] || { engagementIndex: 0, eNPS: 0, attritionRisk: 0, responseRate: 0 };
@@ -227,7 +230,7 @@ export default function TabTongQuan() {
   }));
 
   const divData = [...divisionData]
-    .filter((d) => !filters.khoi || d.khoiId === filters.khoi)
+    .filter((d) => !activeKhoiFilter || d.khoiId === activeKhoiFilter)
     .map((d) => ({
       name: d.khoiLabel.replace("Khối ", ""),
       eNPS: filters.year === 2026 ? d.eNPS2026 : d.eNPS2025,
@@ -248,6 +251,67 @@ export default function TabTongQuan() {
 
   return (
     <div className="space-y-5 stagger-children">
+      {/* ── AI-Powered Predictive Analytics & Smart Recommendation Panel ── */}
+      <div className="bg-gradient-to-r from-orange-500/5 via-[#006FAD]/5 to-purple-500/5 border border-orange-500/20 rounded-[24px] p-5 shadow-sm relative overflow-hidden flex flex-col md:flex-row gap-4 items-center animate-fadeIn">
+        {/* Glow decoration */}
+        <div className="absolute -right-20 -top-20 w-40 h-40 rounded-full bg-orange-500/10 blur-3xl pointer-events-none" />
+        <div className="absolute -left-20 -bottom-20 w-40 h-40 rounded-full bg-[#006FAD]/10 blur-3xl pointer-events-none" />
+
+        <div className="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#FF5200] to-purple-600 flex items-center justify-center shrink-0 shadow-md shadow-orange-500/10 animate-pulse">
+          <Sparkles className="w-6 h-6 text-white" />
+        </div>
+
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2 mb-1">
+            <span className="text-[10px] font-bold uppercase tracking-wider bg-orange-500/10 text-[#FF5200] px-2 py-0.5 rounded-full">
+              Predictive AI
+            </span>
+            <span className="text-[11px] font-semibold text-slate-500">
+              Cảnh báo sớm & Dự báo EX
+            </span>
+          </div>
+
+          {userRole === "HR_EX" && (
+            <p className="text-[13px] text-slate-700 leading-relaxed">
+              🔮 <strong>Dự báo Churn Risk:</strong> Tỷ lệ rủi ro nghỉ việc tại Khối Vận Hành dự báo tăng <strong>15%</strong> trong Q2/2026 do điểm TC4 (Thu nhập) giảm xuống dưới 6.2.
+              <span className="block mt-1 text-slate-600">
+                💡 <strong>Đề xuất hành động:</strong> Rà soát phụ cấp thâm niên tài xế và tối ưu hóa thời gian phân ca kíp tại Kho/Bưu cục trọng điểm.
+              </span>
+            </p>
+          )}
+
+          {userRole === "KHOI_LEADER" && !userScope && (
+            <p className="text-[13px] text-slate-700 leading-relaxed">
+              🔮 <strong>Dự báo EI chu kỳ tới:</strong> Có thể đạt <strong>74.8 (+2.1%)</strong> nếu hoàn thành 80% Action Items.
+              <span className="block mt-1 text-slate-600">
+                💡 <strong>Khuyến nghị của AI:</strong> Phê duyệt khẩn cấp ngân sách bổ sung cho quỹ phúc lợi EX khối kho bãi (dự kiến cải thiện 1.2% EI toàn công ty).
+              </span>
+            </p>
+          )}
+
+          {userRole === "KHOI_LEADER" && userScope && (
+            <p className="text-[13px] text-slate-700 leading-relaxed">
+              🔮 <strong>Dự báo Churn Risk (Khối Vận Hành):</strong> Rủi ro rời bỏ của Khối Vận Hành dự báo tăng <strong>15%</strong> vào Q2/2026 do áp lực ca kíp và điểm thu nhập thấp.
+              <span className="block mt-1 text-slate-600">
+                💡 <strong>Khuyến nghị riêng cho Khối:</strong> Triển khai khẩn cấp chương trình đối thoại trực tiếp "Lắng nghe Tài xế" tại khu vực TP.HCM để điều chỉnh thời gian tăng ca.
+              </span>
+            </p>
+          )}
+        </div>
+      </div>
+
+      {/* ── Leader specific alert ── */}
+      {userRole === "KHOI_LEADER" && (
+        <div className="bg-red-50 border border-red-200/60 rounded-[20px] p-4 text-xs text-red-800 flex items-center justify-between shadow-sm animate-fadeIn">
+          <div className="flex items-center gap-2">
+            <AlertTriangle className="w-4.5 h-4.5 text-red-500 shrink-0" />
+            <span>⚠️ <strong>Cảnh báo quản trị:</strong> Khối Vận Hành hiện đang có <strong>3 hành động thực thi trễ hạn</strong> cần xử lý gấp.</span>
+          </div>
+          <span className="font-bold text-[#FF5200] underline shrink-0 cursor-pointer hover:opacity-85">
+            Xem trong Action Tracker
+          </span>
+        </div>
+      )}
       {/* ── KPI Cards ── */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
         <KpiCard
