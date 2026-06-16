@@ -14,7 +14,7 @@ import AutoReport from "@/components/AutoReport";
 import DataUpload from "@/components/DataUpload";
 import ChatBotCopilot from "@/components/ChatBotCopilot";
 import {
-  BarChart2, Search, CheckSquare, Clock, BookOpen, Sparkles, Info,
+  BarChart2, Search, CheckSquare, Clock, BookOpen, Sparkles, Info, Bot,
 } from "lucide-react";
 
 const TABS = [
@@ -55,6 +55,7 @@ function LiveClock() {
 
 export default function Dashboard() {
   const [activeTab, setActiveTab] = useState<TabId>("tongquan");
+  const [isChatExpanded, setIsChatExpanded] = useState<boolean>(false);
 
   return (
     <DashboardProvider>
@@ -119,7 +120,7 @@ export default function Dashboard() {
           {/* Left Sidebar */}
           <aside className="w-[280px] shrink-0 sticky top-[135px] flex flex-col gap-6 max-h-[calc(100vh-160px)] overflow-y-auto scrollbar-hide">
             {/* Vertical Navigation Card */}
-            <div className="bg-white rounded-xl p-3 shadow-sm border border-slate-200/80 flex flex-col gap-1">
+            <div className="bg-white/90 backdrop-blur-md rounded-xl p-3 shadow-sm border border-slate-200/60 flex flex-col gap-1 transition-all duration-150">
               <div className="text-[10px] font-bold text-slate-400 px-3 uppercase tracking-wider mb-2">
                 Danh mục điều hướng
               </div>
@@ -135,8 +136,8 @@ export default function Dashboard() {
                       className={`flex items-center justify-between px-3 py-2.5 rounded-lg text-[13px] font-semibold transition-all duration-150 border-l-2 ${
                         isActive
                           ? isAI
-                            ? "border-purple-500 text-purple-600 bg-purple-50/60"
-                            : "border-orange-500 text-orange-600 bg-orange-50/50"
+                            ? "border-purple-500 text-purple-600 bg-purple-50/70 shadow-[0_0_12px_rgba(168,85,247,0.12)] animate-pulse"
+                            : "border-orange-500 text-orange-600 bg-orange-50/60 shadow-[0_0_12px_rgba(255,82,0,0.12)]"
                           : "border-transparent text-slate-600 hover:bg-slate-50 hover:text-slate-900"
                       }`}
                     >
@@ -161,10 +162,30 @@ export default function Dashboard() {
               </nav>
             </div>
 
-            {/* Embedded Chatbot Copilot Widget */}
-            <div className="shrink-0 rounded-xl overflow-hidden shadow-sm">
-              <ChatBotCopilot isEmbedded={true} />
-            </div>
+            {/* Collapsible Chatbot Widget */}
+            {isChatExpanded ? (
+              <div className="shrink-0 rounded-xl overflow-hidden shadow-lg animate-fadeInUp">
+                <ChatBotCopilot isEmbedded={true} onClose={() => setIsChatExpanded(false)} />
+              </div>
+            ) : (
+              <button
+                onClick={() => setIsChatExpanded(true)}
+                className="w-full bg-slate-950 text-white hover:bg-slate-900 border border-slate-800 rounded-xl p-3.5 flex items-center justify-between transition-all duration-150 shadow-md group border-l-4 border-l-[#FF5200] hover:shadow-[0_0_15px_rgba(255,82,0,0.15)]"
+              >
+                <div className="flex items-center gap-2.5">
+                  <div className="w-8 h-8 rounded-lg bg-slate-900 border border-slate-800 flex items-center justify-center shrink-0 relative">
+                    <Bot className="w-4.5 h-4.5 text-[#FF5200] group-hover:scale-110 transition-transform duration-150" />
+                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-green-500 animate-ping" />
+                    <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-green-500" />
+                  </div>
+                  <div className="text-left">
+                    <div className="text-[12px] font-extrabold tracking-tight">Trợ lý GHN Copilot</div>
+                    <div className="text-[9px] text-slate-400 font-medium">Click để chat AI</div>
+                  </div>
+                </div>
+                <Sparkles className="w-3.5 h-3.5 text-purple-400 animate-pulse" />
+              </button>
+            )}
           </aside>
 
           {/* Right Main Content Panel */}
